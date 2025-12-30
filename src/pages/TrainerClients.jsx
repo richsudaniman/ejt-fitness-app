@@ -40,36 +40,33 @@ export default function TrainerClients() {
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['allWorkoutLogs', user?.id],
     queryFn: async () => {
-      const clientIds = assignments.map(a => a.client_id);
       if (clientIds.length === 0) return [];
       const allLogs = await base44.entities.WorkoutLog.list('-completed_date', 200);
       return allLogs.filter(log => clientIds.includes(log.logged_by_client_id));
     },
     initialData: [],
-    enabled: !!user?.id && assignments.length > 0,
+    enabled: !!user?.id && clientIds.length > 0,
   });
 
   const { data: calorieLogs, isLoading: calorieLogsLoading } = useQuery({
     queryKey: ['allCalorieLogs', user?.id],
     queryFn: async () => {
-      const clientIds = assignments.map(a => a.client_id);
       if (clientIds.length === 0) return [];
       const allLogs = await base44.entities.CalorieLog.list('-created_date', 200);
       return allLogs.filter(log => clientIds.includes(log.logged_by_client_id));
     },
     initialData: [],
-    enabled: !!user?.id && assignments.length > 0,
+    enabled: !!user?.id && clientIds.length > 0,
   });
 
   const { data: allGoals, isLoading: goalsLoading } = useQuery({
     queryKey: ['allClientGoals', user?.id],
     queryFn: async () => {
-      const clientIds = assignments.map(a => a.client_id);
       if (clientIds.length === 0) return [];
       return await base44.entities.FitnessGoal.filter({ is_active: true });
     },
     initialData: [],
-    enabled: !!user?.id && assignments.length > 0,
+    enabled: !!user?.id && clientIds.length > 0,
   });
 
   const { data: allWorkoutPlans, isLoading: plansLoading } = useQuery({
