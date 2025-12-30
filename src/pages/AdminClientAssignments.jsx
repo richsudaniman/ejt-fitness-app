@@ -140,6 +140,7 @@ EJT Fitness Team`
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
       setShowAssignModal(false);
       setSelectedClient(null);
       setNewTrainerId("");
