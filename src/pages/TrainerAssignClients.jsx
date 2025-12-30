@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { UserPlus, UserMinus, Search, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getAvailableClients } from "@/functions/getAvailableClients";
+import { assignClientToTrainer } from "@/functions/assignClientToTrainer";
 
 export default function TrainerAssignClients() {
   const queryClient = useQueryClient();
