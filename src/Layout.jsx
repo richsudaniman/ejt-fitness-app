@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Home, Dumbbell, UtensilsCrossed, TrendingUp, GraduationCap, Users, Video, UserPlus, Award, MessageCircle, Menu, X, LogOut, Settings } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -10,7 +10,9 @@ import { Button } from "@/components/ui/button";
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
@@ -25,6 +27,26 @@ export default function Layout({ children, currentPageName }) {
     refetchOnWindowFocus: false,
     retry: 1,
   });
+
+  // Redirect users to their appropriate home page on initial load
+  React.useEffect(() => {
+    if (!user || hasRedirected) return;
+    
+    const currentPath = location.pathname;
+    const isHomePage = currentPath === '/' || currentPath === '/Home' || currentPath === createPageUrl('Home');
+    
+    // Only redirect if user lands on generic home page
+    if (isHomePage) {
+      if (user.role === 'admin') {
+        navigate(createPageUrl('AdminDashboard'), { replace: true });
+        setHasRedirected(true);
+      } else if (user.user_type === 'trainer' || user.role === 'trainer') {
+        navigate(createPageUrl('TrainerDashboard'), { replace: true });
+        setHasRedirected(true);
+      }
+      // Clients stay on Home page - no redirect needed
+    }
+  }, [user, location.pathname, hasRedirected, navigate]);
 
   // Get unread message count for badge
   const { data: unreadCount } = useQuery({
