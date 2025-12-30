@@ -33,21 +33,35 @@ export default function Layout({ children, currentPageName }) {
     if (!user || hasRedirected) return;
     
     const currentPath = location.pathname;
-    const isHomePage = currentPath === '/' || currentPath === '/Home' || currentPath === createPageUrl('Home');
+    const isGenericHome = currentPath === '/' || currentPath === '/Home' || currentPath === createPageUrl('Home');
+    const isAdminPage = currentPath.includes('Admin');
+    const isTrainerPage = currentPath.includes('Trainer');
     
-    // Only redirect if user lands on generic home page or wrong dashboard
-    if (user.role === 'admin') {
-      if (isHomePage || currentPath.includes('TrainerDashboard')) {
+    // Determine user's role - admin takes priority
+    const isAdmin = user.role === 'admin';
+    const isTrainer = !isAdmin && (user.user_type === 'trainer' || user.role === 'trainer');
+    const isClient = !isAdmin && !isTrainer;
+    
+    // Redirect based on role
+    if (isAdmin) {
+      // Admins go to Admin Dashboard if on generic home or trainer pages
+      if (isGenericHome || isTrainerPage) {
         navigate(createPageUrl('AdminDashboard'), { replace: true });
         setHasRedirected(true);
       }
-    } else if (user.user_type === 'trainer' || user.role === 'trainer') {
-      if (isHomePage || currentPath.includes('AdminDashboard')) {
+    } else if (isTrainer) {
+      // Trainers go to Trainer Dashboard if on generic home or admin pages
+      if (isGenericHome || isAdminPage) {
         navigate(createPageUrl('TrainerDashboard'), { replace: true });
         setHasRedirected(true);
       }
+    } else if (isClient) {
+      // Clients go to Home if they somehow land on admin or trainer pages
+      if (isAdminPage || isTrainerPage) {
+        navigate(createPageUrl('Home'), { replace: true });
+        setHasRedirected(true);
+      }
     }
-    // Clients stay on Home page - no redirect needed
   }, [user, location.pathname, hasRedirected, navigate]);
 
   // Get unread message count for badge
