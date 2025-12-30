@@ -41,6 +41,11 @@ export default function AdminClientAssignments() {
         await base44.entities.TrainerClientAssignment.update(assignment.id, { is_active: false });
       }
 
+      // Update the User entity with the trainer ID
+      await base44.entities.User.update(clientId, {
+        assigned_trainer_id: trainerId
+      });
+
       // Create new assignment
       return base44.entities.TrainerClientAssignment.create({
         trainer_id: trainerId,
@@ -51,6 +56,7 @@ export default function AdminClientAssignments() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
       setShowAssignModal(false);
       setSelectedClient(null);
       setNewTrainerId("");
