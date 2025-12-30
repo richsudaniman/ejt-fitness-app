@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UserPlus, UserMinus, Search, User } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getAvailableClients } from "@/functions/getAvailableClients";
 
 export default function TrainerAssignClients() {
   const queryClient = useQueryClient();
@@ -16,31 +17,19 @@ export default function TrainerAssignClients() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: allUsers, isLoading: usersLoading } = useQuery({
-    queryKey: ['allUsers'],
-    queryFn: () => base44.entities.User.list(),
-    initialData: [],
+  // Use backend function to get clients (trainers can't list users directly)
+  const { data: clientData, isLoading: clientsLoading } = useQuery({
+    queryKey: ['availableClients'],
+    queryFn: async () => {
+      const response = await getAvailableClients();
+      return response.data;
+    },
+    initialData: { clients: [], assignments: [], trainerId: null },
   });
 
-  const { data: assignments, isLoading: assignmentsLoading } = useQuery({
-    queryKey: ['allAssignments', trainer?.id],
-    queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.list();
-      return all.filter(a => a.trainer_id === trainer.id);
-    },
-    initialData: [],
-    enabled: !!trainer?.id,
-  });
-
-  const { data: allAssignments, isLoading: allAssignmentsLoading } = useQuery({
-    queryKey: ['allTrainerAssignments'],
-    queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.list();
-      return all.filter(a => a.is_active);
-    },
-    initialData: [],
-    enabled: !!trainer?.id,
-  });
+  const allUsers = clientData.clients || [];
+  const allAssignments = clientData.assignments || [];
+  const assignments = allAssignments.filter(a => a.trainer_id === trainer?.id);
 
   const assignClientMutation = useMutation({
     mutationFn: async (clientId) => {
