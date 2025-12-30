@@ -32,7 +32,15 @@ export default function AdminUsers() {
   });
 
   const handleRoleChange = async (userId, newRole) => {
-    await updateUserMutation.mutateAsync({ userId, data: { role: newRole } });
+    // Sync user_type with role for consistency across the platform
+    const userType = newRole === 'user' ? 'client' : newRole;
+    await updateUserMutation.mutateAsync({ 
+      userId, 
+      data: { 
+        role: newRole,
+        user_type: userType 
+      } 
+    });
   };
 
   const filteredUsers = allUsers.filter(user => {
