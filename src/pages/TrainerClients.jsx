@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format, differenceInDays } from "date-fns";
+import { getAvailableClients } from "@/functions/getAvailableClients";
 
 export default function TrainerClients() {
   const [searchQuery, setSearchQuery] = useState("");
