@@ -19,28 +19,23 @@ export default function TrainerClients() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: assignments, isLoading: assignmentsLoading } = useQuery({
-    queryKey: ['trainerAssignments', user?.id],
+  // Use backend function to get clients (trainers can't list users directly)
+  const { data: clientData, isLoading: clientDataLoading } = useQuery({
+    queryKey: ['trainerClientsData', user?.id],
     queryFn: async () => {
-      const all = await base44.entities.TrainerClientAssignment.list();
-      return all.filter(a => a.trainer_id === user.id && a.is_active);
+      const response = await getAvailableClients();
+      return response.data;
     },
-    initialData: [],
+    initialData: { clients: [], assignments: [] },
     enabled: !!user?.id,
   });
 
-  const { data: clients, isLoading: clientsLoading } = useQuery({
-    queryKey: ['assignedClients', user?.id, assignments],
-    queryFn: async () => {
-      const clientIds = assignments.map(a => a.client_id);
-      if (clientIds.length === 0) return [];
-      const allUsers = await base44.entities.User.list();
-      // Filter out admins from client lists, even if assigned
-      return allUsers.filter(u => clientIds.includes(u.id) && u.role !== 'admin' && u.role !== 'trainer');
-    },
-    initialData: [],
-    enabled: !!user?.id && !assignmentsLoading,
-  });
+  // Filter assignments to only this trainer's active ones
+  const assignments = (clientData.assignments || []).filter(a => a.trainer_id === user?.id && a.is_active);
+  
+  // Filter clients to only those assigned to this trainer
+  const clientIds = assignments.map(a => a.client_id);
+  const clients = (clientData.clients || []).filter(c => clientIds.includes(c.id));
 
   const { data: workoutLogs, isLoading: logsLoading } = useQuery({
     queryKey: ['allWorkoutLogs', user?.id],
