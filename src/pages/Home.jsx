@@ -40,16 +40,17 @@ export default function Home() {
   // REMOVED: Auto-sync mechanism that was calling User.list() and TrainerClientAssignment.list()
   // which clients don't have permission to access. Trainer assignment is now handled by admin/trainer.
 
-  // CHANGED: Don't call User.list() which clients don't have permission for
-  // Instead, we'll just use the assigned_trainer_id and show a simple trainer card
-  // The trainer data can be stored on the user entity if needed
-  const trainer = user?.assigned_trainer_id ? {
-    id: user.assigned_trainer_id,
-    full_name: "Your Trainer",
-    profile_photo_url: null,
-    specialties: null
-  } : null;
-  const trainerLoading = userLoading;
+    // Fetch trainer details using backend function
+  const { data: trainer, isLoading: trainerLoading } = useQuery({
+    queryKey: ['myTrainer', user?.assigned_trainer_id],
+    queryFn: async () => {
+      if (!user?.assigned_trainer_id) return null;
+      const { data } = await base44.functions.invoke('getMyTrainer');
+      return data?.trainer || null;
+    },
+    enabled: !!user?.assigned_trainer_id,
+    staleTime: 60 * 60 * 1000, // Cache for 1 hour
+  });
 
   const { data: workoutPlans, isLoading: workoutsLoading } = useQuery({
     queryKey: ['workoutPlans', user?.id],
