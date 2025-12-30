@@ -8,6 +8,7 @@ import { User, ArrowLeft, Dumbbell, UtensilsCrossed, Target, FileText } from "lu
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { getAvailableClients } from "@/functions/getAvailableClients";
 import ClientWorkoutPlans from "../components/trainer/ClientWorkoutPlans";
 import ClientNutritionPlans from "../components/trainer/ClientNutritionPlans";
 import ClientGoals from "../components/trainer/ClientGoals";
