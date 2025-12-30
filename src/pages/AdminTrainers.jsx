@@ -47,7 +47,14 @@ export default function AdminTrainers() {
   });
 
   const toggleTrainerStatusMutation = useMutation({
-    mutationFn: ({ userId, newUserType }) => base44.entities.User.update(userId, { user_type: newUserType }),
+    mutationFn: ({ userId, newUserType }) => {
+      // Sync role with user_type for consistency
+      const newRole = newUserType === 'trainer' ? 'trainer' : 'user';
+      return base44.entities.User.update(userId, { 
+        user_type: newUserType,
+        role: newRole 
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
     },
