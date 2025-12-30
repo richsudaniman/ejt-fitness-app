@@ -44,7 +44,8 @@ export default function ClientNutritionPlans({ clientId, client }) {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['client'] });
+      // Invalidate the parent's query to refetch client data including new calorie goal
+      queryClient.invalidateQueries({ queryKey: ['client', clientId] });
       setEditingCalorieGoal(false);
       setCalorieGoal("");
     },
