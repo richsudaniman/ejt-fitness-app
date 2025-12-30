@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Plus, Edit, Trash2, Flame, Calendar, Target } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import NutritionPlanForm from "./NutritionPlanForm";
+import { updateClientCalorieGoal } from "@/functions/updateClientCalorieGoal";
 
 export default function ClientNutritionPlans({ clientId }) {
   const queryClient = useQueryClient();
