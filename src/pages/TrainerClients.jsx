@@ -147,7 +147,7 @@ export default function TrainerClients() {
     };
   };
 
-  const isLoading = assignmentsLoading || clientsLoading || logsLoading || calorieLogsLoading || goalsLoading || plansLoading;
+  const isLoading = clientDataLoading || logsLoading || calorieLogsLoading || goalsLoading || plansLoading;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
