@@ -35,17 +35,19 @@ export default function Layout({ children, currentPageName }) {
     const currentPath = location.pathname;
     const isHomePage = currentPath === '/' || currentPath === '/Home' || currentPath === createPageUrl('Home');
     
-    // Only redirect if user lands on generic home page
-    if (isHomePage) {
-      if (user.role === 'admin') {
+    // Only redirect if user lands on generic home page or wrong dashboard
+    if (user.role === 'admin') {
+      if (isHomePage || currentPath.includes('TrainerDashboard')) {
         navigate(createPageUrl('AdminDashboard'), { replace: true });
         setHasRedirected(true);
-      } else if (user.user_type === 'trainer' || user.role === 'trainer') {
+      }
+    } else if (user.user_type === 'trainer' || user.role === 'trainer') {
+      if (isHomePage || currentPath.includes('AdminDashboard')) {
         navigate(createPageUrl('TrainerDashboard'), { replace: true });
         setHasRedirected(true);
       }
-      // Clients stay on Home page - no redirect needed
     }
+    // Clients stay on Home page - no redirect needed
   }, [user, location.pathname, hasRedirected, navigate]);
 
   // Get unread message count for badge
