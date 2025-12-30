@@ -14,16 +14,20 @@ export default function Learn() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  const { data: videos, isLoading } = useQuery({
+  const { data: videos, isLoading, error } = useQuery({
     queryKey: ['allVideos'],
     queryFn: async () => {
       const allVideos = await base44.entities.ExerciseVideo.list('-created_date');
-      return allVideos;
+      // Filter out placeholder videos that don't have real video URLs
+      return allVideos.filter(v => v.video_url && v.video_url !== 'placeholder' && v.video_url.startsWith('http'));
     },
     initialData: [],
-    staleTime: 15 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
+
+  // Debug log
+  console.log('Videos loaded:', videos?.length, 'Error:', error);
 
   const filteredVideos = videos.filter(video => {
     const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
