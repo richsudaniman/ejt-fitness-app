@@ -37,48 +37,19 @@ export default function Home() {
     queryClient.invalidateQueries();
   }, [queryClient]);
 
-  // ADDED: Auto-sync mechanism to ensure assigned_trainer_id is populated
-  useEffect(() => {
-    const syncTrainerAssignment = async () => {
-      if (!user || user.assigned_trainer_id || userLoading) return;
-      
-      try {
-        // Check if there's an active assignment without the denormalized field
-        const assignments = await base44.entities.TrainerClientAssignment.list();
-        const activeAssignment = assignments.find(a => 
-          a.client_id === user.id && a.is_active
-        );
-        
-        if (activeAssignment && !user.assigned_trainer_id) {
-          console.log('Syncing trainer assignment for user:', user.id);
-          
-          // Update the user record with the trainer ID
-          await base44.entities.User.update(user.id, {
-            assigned_trainer_id: activeAssignment.trainer_id
-          });
-          
-          // Force refetch of user data
-          queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-        }
-      } catch (error) {
-        console.error('Error syncing trainer assignment:', error);
-      }
-    };
-    
-    syncTrainerAssignment();
-  }, [user, userLoading, queryClient]);
+  // REMOVED: Auto-sync mechanism that was calling User.list() and TrainerClientAssignment.list()
+  // which clients don't have permission to access. Trainer assignment is now handled by admin/trainer.
 
-  const { data: trainer, isLoading: trainerLoading } = useQuery({
-    queryKey: ['trainer', user?.assigned_trainer_id],
-    queryFn: async () => {
-      if (!user?.assigned_trainer_id) return null;
-      const allUsers = await base44.entities.User.list();
-      return allUsers.find(u => u.id === user.assigned_trainer_id) || null;
-    },
-    enabled: !!user?.assigned_trainer_id,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+  // CHANGED: Don't call User.list() which clients don't have permission for
+  // Instead, we'll just use the assigned_trainer_id and show a simple trainer card
+  // The trainer data can be stored on the user entity if needed
+  const trainer = user?.assigned_trainer_id ? {
+    id: user.assigned_trainer_id,
+    full_name: "Your Trainer",
+    profile_photo_url: null,
+    specialties: null
+  } : null;
+  const trainerLoading = userLoading;
 
   const { data: workoutPlans, isLoading: workoutsLoading } = useQuery({
     queryKey: ['workoutPlans', user?.id],
