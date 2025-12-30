@@ -43,7 +43,7 @@ export default function Layout({ children, currentPageName }) {
     refetchInterval: 60 * 1000, // Refresh every minute
   });
 
-  // Determine view mode based on current page first, then user role/type
+  // Determine view mode based on current page AND user role
   const getViewMode = () => {
     if (!user) return 'client';
     
@@ -55,15 +55,12 @@ export default function Layout({ children, currentPageName }) {
       return 'admin';
     }
     
-    // Client pages - always show client view
-    const clientPages = ['Home', 'Workout', 'Nutrition', 'Progress', 'Learn', 'Messages'];
-    if (clientPages.includes(currentPageName)) {
-      return 'client';
-    }
-    
-    // Fall back to user role/type
+    // For generic pages like Home, check the user's actual role FIRST
+    // Admins should be redirected to admin portal, trainers to trainer portal
     if (user.role === 'admin') return 'admin';
     if (user.user_type === 'trainer' || user.role === 'trainer') return 'trainer';
+    
+    // Only regular clients see client pages
     return 'client';
   };
 
