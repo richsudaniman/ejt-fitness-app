@@ -101,8 +101,9 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const getHomePath = () => {
-    if (isAdminView) return createPageUrl("AdminDashboard");
-    if (isTrainerView) return createPageUrl("TrainerDashboard");
+    // Use user role to determine home path, not current view
+    if (user?.role === 'admin') return createPageUrl("AdminDashboard");
+    if (user?.user_type === 'trainer' || user?.role === 'trainer') return createPageUrl("TrainerDashboard");
     return createPageUrl("Home");
   };
 
