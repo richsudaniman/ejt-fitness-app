@@ -127,7 +127,7 @@ export default function TrainerClientDetail() {
         </TabsContent>
 
         <TabsContent value="nutrition" className="mt-4">
-          <ClientNutritionPlans clientId={clientId} />
+          <ClientNutritionPlans clientId={clientId} client={client} />
         </TabsContent>
 
         <TabsContent value="goals" className="mt-4">
