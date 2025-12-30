@@ -34,34 +34,14 @@ export default function TrainerAssignClients() {
 
   const assignClientMutation = useMutation({
     mutationFn: async (clientId) => {
-      // Check if client is already assigned to ANOTHER trainer
-      const existingAssignment = allAssignments.find(a => a.client_id === clientId && a.is_active);
-      if (existingAssignment && existingAssignment.trainer_id !== trainer.id) {
-        throw new Error('This client is already assigned to another trainer');
+      const response = await assignClientToTrainer({ clientId, action: 'assign' });
+      if (response.data.error) {
+        throw new Error(response.data.error);
       }
-      
-      // ALWAYS update the User entity with the trainer ID (even for re-assignments)
-      await base44.entities.User.update(clientId, {
-        assigned_trainer_id: trainer.id
-      });
-      
-      // Check if assignment already exists for THIS trainer
-      const myExistingAssignment = assignments.find(a => a.client_id === clientId && a.is_active);
-      
-      if (myExistingAssignment) {
-        // Assignment already exists, just return it (no need to create duplicate)
-        return myExistingAssignment;
-      }
-      
-      // Create new assignment
-      return base44.entities.TrainerClientAssignment.create({
-        trainer_id: trainer.id,
-        client_id: clientId,
-        assigned_date: new Date().toISOString().split('T')[0],
-        is_active: true,
-      });
+      return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['availableClients'] });
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['allTrainerAssignments'] });
@@ -72,14 +52,14 @@ export default function TrainerAssignClients() {
 
   const unassignClientMutation = useMutation({
     mutationFn: async ({ assignmentId, clientId }) => {
-      // Remove the trainer ID from the User entity
-      await base44.entities.User.update(clientId, {
-        assigned_trainer_id: null
-      });
-      
-      return base44.entities.TrainerClientAssignment.delete(assignmentId);
+      const response = await assignClientToTrainer({ clientId, action: 'unassign' });
+      if (response.data.error) {
+        throw new Error(response.data.error);
+      }
+      return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['availableClients'] });
       queryClient.invalidateQueries({ queryKey: ['allAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['trainerAssignments'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
