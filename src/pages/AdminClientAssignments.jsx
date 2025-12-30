@@ -75,6 +75,11 @@ export default function AdminClientAssignments() {
         await base44.entities.TrainerClientAssignment.update(oldAssignment.id, { is_active: false });
       }
 
+      // Update the User entity with the new trainer ID
+      await base44.entities.User.update(clientId, {
+        assigned_trainer_id: newTrainerId
+      });
+
       // Create new assignment
       const newAssignment = await base44.entities.TrainerClientAssignment.create({
         trainer_id: newTrainerId,
