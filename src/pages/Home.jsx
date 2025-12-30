@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle, Calendar, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
+import { getMyTrainer } from "@/functions/getMyTrainer";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -45,7 +46,7 @@ export default function Home() {
     queryKey: ['myTrainer', user?.assigned_trainer_id],
     queryFn: async () => {
       if (!user?.assigned_trainer_id) return null;
-      const { data } = await base44.functions.invoke('getMyTrainer');
+      const { data } = await getMyTrainer();
       return data?.trainer || null;
     },
     enabled: !!user?.assigned_trainer_id,
