@@ -74,7 +74,7 @@ export default function AdminTrainers() {
     if (editingTrainer) {
       await updateTrainerMutation.mutateAsync({
         userId: editingTrainer.id,
-        data: { ...formData, user_type: 'trainer' }
+        data: { ...formData, user_type: 'trainer', role: 'trainer' }
       });
     }
   };
