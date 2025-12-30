@@ -45,7 +45,13 @@ export default function ClientNutritionPlans({ clientId }) {
   });
 
   const updateCalorieGoalMutation = useMutation({
-    mutationFn: (calorieTarget) => base44.entities.User.update(clientId, { daily_calorie_target: calorieTarget }),
+    mutationFn: async (calorieTarget) => {
+      const response = await updateClientCalorieGoal({ clientId, calorieTarget });
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+      return response.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['client'] });
       setEditingCalorieGoal(false);
