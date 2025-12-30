@@ -21,11 +21,13 @@ export default function TrainerClientDetail() {
   const { state } = useLocation();
   const clientId = state?.clientId || searchParams.get('clientId');
 
+  // Use backend function to get client data (trainers can't list users directly)
   const { data: client, isLoading: clientLoading } = useQuery({
     queryKey: ['client', clientId],
     queryFn: async () => {
-      const allUsers = await base44.entities.User.list();
-      return allUsers.find(u => u.id === clientId) || null;
+      const response = await getAvailableClients();
+      const clients = response.data?.clients || [];
+      return clients.find(u => u.id === clientId) || null;
     },
     enabled: !!clientId,
   });
