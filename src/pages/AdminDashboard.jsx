@@ -52,9 +52,9 @@ export default function AdminDashboard() {
     refetchOnMount: true,
   });
 
-  const trainers = allUsers.filter(u => u.role === 'trainer');
-  const clients = allUsers.filter(u => u.role === 'user' || !u.role);
+  const trainers = allUsers.filter(u => u.role === 'trainer' || u.user_type === 'trainer');
   const admins = allUsers.filter(u => u.role === 'admin');
+  const clients = allUsers.filter(u => u.role !== 'admin' && u.role !== 'trainer' && u.user_type !== 'trainer');
 
   // Calculate weekly activity with proper date handling (local time)
   const last7DaysDates = Array.from({ length: 7 }, (_, i) => {
