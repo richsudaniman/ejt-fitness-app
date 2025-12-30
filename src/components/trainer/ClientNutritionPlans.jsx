@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import NutritionPlanForm from "./NutritionPlanForm";
 import { updateClientCalorieGoal } from "@/functions/updateClientCalorieGoal";
 
-export default function ClientNutritionPlans({ clientId }) {
+export default function ClientNutritionPlans({ clientId, client }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
@@ -19,15 +19,6 @@ export default function ClientNutritionPlans({ clientId }) {
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me(),
-  });
-
-  const { data: client, isLoading: clientLoading } = useQuery({
-    queryKey: ['client', clientId],
-    queryFn: async () => {
-      const users = await base44.entities.User.filter({ id: clientId });
-      return users[0] || null;
-    },
-    enabled: !!clientId,
   });
 
   const { data: nutritionPlans, isLoading } = useQuery({
