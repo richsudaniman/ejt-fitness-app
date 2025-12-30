@@ -33,7 +33,8 @@ export default function TrainerDashboard() {
       const clientIds = assignments.map(a => a.client_id);
       if (clientIds.length === 0) return [];
       const allUsers = await base44.entities.User.list();
-      return allUsers.filter(u => clientIds.includes(u.id));
+      // Filter out admins from client lists, even if assigned
+      return allUsers.filter(u => clientIds.includes(u.id) && u.role !== 'admin' && u.role !== 'trainer');
     },
     enabled: !!trainer?.id && assignments.length > 0,
     staleTime: 5 * 60 * 1000,
