@@ -85,6 +85,9 @@ export default function Layout({ children, currentPageName }) {
   const getViewMode = () => {
     if (!user) return 'client';
     
+    // Admins ALWAYS see admin view, regardless of page
+    if (user.role === 'admin') return 'admin';
+
     // Check current page name to determine context
     if (currentPageName?.startsWith('Trainer')) {
       return 'trainer';
@@ -94,8 +97,6 @@ export default function Layout({ children, currentPageName }) {
     }
     
     // For generic pages like Home, check the user's actual role FIRST
-    // Admins should be redirected to admin portal, trainers to trainer portal
-    if (user.role === 'admin') return 'admin';
     if (user.user_type === 'trainer' || user.role === 'trainer') return 'trainer';
     
     // Only regular clients see client pages
