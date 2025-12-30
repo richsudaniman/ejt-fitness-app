@@ -85,7 +85,8 @@ export default function TrainerAssignClients() {
     },
   });
 
-  const clients = allUsers.filter(u => u.role === 'user' || !u.role);
+  // Clients are already filtered by the backend function
+  const clients = allUsers;
   
   const filteredClients = clients.filter(client => {
     const query = searchQuery.toLowerCase();
