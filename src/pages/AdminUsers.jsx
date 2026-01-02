@@ -29,16 +29,21 @@ export default function AdminUsers() {
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
       setEditingUser(null);
     },
+    onError: (error) => {
+      alert(`Failed to update user: ${error.message}`);
+    }
   });
 
-  const handleRoleChange = async (userId, newRole) => {
-    // Sync user_type with role for consistency across the platform
-    const userType = newRole === 'user' ? 'client' : newRole;
+  const handleRoleChange = async (userId, newUserType) => {
+    // Determine system role: Only 'admin' user_type gets 'admin' system role
+    // 'trainer' and 'client' user_types get 'user' system role
+    const systemRole = newUserType === 'admin' ? 'admin' : 'user';
+    
     await updateUserMutation.mutateAsync({ 
       userId, 
       data: { 
-        role: newRole,
-        user_type: userType 
+        role: systemRole,
+        user_type: newUserType 
       } 
     });
   };
@@ -46,24 +51,27 @@ export default function AdminUsers() {
   const filteredUsers = allUsers.filter(user => {
     const matchesSearch = user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                          user.email?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRole = roleFilter === "all" || user.role === roleFilter || (!user.role && roleFilter === "user");
+    
+    const userType = user.user_type || (user.role === 'admin' ? 'admin' : 'client');
+    const matchesRole = roleFilter === "all" || userType === roleFilter;
+    
     return matchesSearch && matchesRole;
   });
 
-  const getRoleIcon = (role) => {
-    if (role === 'admin') return Shield;
-    if (role === 'trainer') return Award;
+  const getRoleIcon = (userType) => {
+    if (userType === 'admin') return Shield;
+    if (userType === 'trainer') return Award;
     return User;
   };
 
-  const getRoleColor = (role) => {
-    if (role === 'admin') return "text-indigo-600 bg-indigo-50";
-    if (role === 'trainer') return "text-teal-600 bg-teal-50";
+  const getRoleColor = (userType) => {
+    if (userType === 'admin') return "text-indigo-600 bg-indigo-50";
+    if (userType === 'trainer') return "text-teal-600 bg-teal-50";
     return "text-sky-600 bg-sky-50";
   };
 
-  const trainersCount = allUsers.filter(u => u.role === 'trainer').length;
-  const adminsCount = allUsers.filter(u => u.role === 'admin').length;
+  const trainersCount = allUsers.filter(u => u.user_type === 'trainer').length;
+  const adminsCount = allUsers.filter(u => u.role === 'admin' || u.user_type === 'admin').length;
   const newThisMonth = allUsers.filter(u => {
       const created = new Date(u.created_date);
       const now = new Date();
