@@ -123,6 +123,7 @@ export default function Layout({ children, currentPageName }) {
     { name: "Dashboard", path: createPageUrl("TrainerDashboard"), icon: Home },
     { name: "Clients", path: createPageUrl("TrainerClients"), icon: Users },
     { name: "Videos", path: createPageUrl("TrainerVideos"), icon: Video },
+    { name: "Profile", path: createPageUrl("TrainerProfile"), icon: Settings },
   ];
 
   // Admin navigation
