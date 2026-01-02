@@ -162,7 +162,7 @@ export default function AdminUsers() {
                 <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="admin">Admins</SelectItem>
                 <SelectItem value="trainer">Trainers</SelectItem>
-                <SelectItem value="user">Clients</SelectItem>
+                <SelectItem value="client">Clients</SelectItem>
             </SelectContent>
             </Select>
         </div>
@@ -175,9 +175,10 @@ export default function AdminUsers() {
         ) : filteredUsers.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredUsers.map(user => {
-                const RoleIcon = getRoleIcon(user.role);
+                const userType = user.user_type || (user.role === 'admin' ? 'admin' : 'client');
+                const RoleIcon = getRoleIcon(userType);
                 const isEditing = editingUser?.id === user.id;
-                const roleColor = getRoleColor(user.role);
+                const roleColor = getRoleColor(userType);
                 
                 return (
                 <Card key={user.id} className="bg-white border-none shadow-sm hover:shadow-md transition-all rounded-xl overflow-hidden group">
@@ -191,7 +192,7 @@ export default function AdminUsers() {
                             )}
                         </div>
                         <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full tracking-wide ${roleColor}`}>
-                            {user.role || 'CLIENT'}
+                            {userType}
                         </span>
                     </div>
 
@@ -205,8 +206,8 @@ export default function AdminUsers() {
                         {isEditing ? (
                             <div className="flex flex-col gap-2">
                             <Select
-                                value={editingUser.role || 'user'}
-                                onValueChange={(value) => setEditingUser({ ...editingUser, role: value })}
+                                value={editingUser.user_type || (editingUser.role === 'admin' ? 'admin' : 'client')}
+                                onValueChange={(value) => setEditingUser({ ...editingUser, user_type: value })}
                             >
                                 <SelectTrigger className="w-full h-9 bg-gray-50 border-gray-200">
                                 <SelectValue />
@@ -214,7 +215,7 @@ export default function AdminUsers() {
                                 <SelectContent>
                                 <SelectItem value="admin">Admin</SelectItem>
                                 <SelectItem value="trainer">Trainer</SelectItem>
-                                <SelectItem value="user">Client</SelectItem>
+                                <SelectItem value="client">Client</SelectItem>
                                 </SelectContent>
                             </Select>
                             <div className="flex gap-2">
@@ -228,7 +229,7 @@ export default function AdminUsers() {
                                 </Button>
                                 <Button
                                 size="sm"
-                                onClick={() => handleRoleChange(user.id, editingUser.role)}
+                                onClick={() => handleRoleChange(user.id, editingUser.user_type)}
                                 disabled={updateUserMutation.isPending}
                                 className="flex-1 h-8 bg-[#0ea5e9] hover:bg-[#0284c7] text-white"
                                 >
