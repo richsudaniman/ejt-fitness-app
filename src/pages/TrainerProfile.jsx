@@ -40,8 +40,9 @@ export default function TrainerProfile() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data) => {
-      // Use User.update instead of auth.updateMe to ensure built-in fields like full_name are updated
-      return await base44.entities.User.update(user.id, data);
+      // Use backend function to update profile to ensure permissions (especially for full_name)
+      const response = await base44.functions.invoke('updateUserProfile', data);
+      return response.data;
     },
     onSuccess: (updatedUser) => {
       // Update cache immediately
