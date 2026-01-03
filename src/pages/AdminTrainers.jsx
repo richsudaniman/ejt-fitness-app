@@ -68,6 +68,7 @@ export default function AdminTrainers() {
       phone: "",
       bio: "",
       specialties: "",
+      profile_photo_url: "",
     });
   };
 
