@@ -236,14 +236,24 @@ export default function AdminTrainers() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Full Name *</label>
-                  <Input
-                    placeholder="John Doe"
-                    value={formData.full_name}
-                    onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                    className="bg-white border-gray-200"
-                    disabled={!editingTrainer}
-                  />
+                <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Full Name *</label>
+                <Input
+                  placeholder="John Doe"
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                  className="bg-white border-gray-200"
+                  disabled={!editingTrainer}
+                />
+                </div>
+
+                <div>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Profile Photo URL</label>
+                <Input
+                  placeholder="https://..."
+                  value={formData.profile_photo_url}
+                  onChange={(e) => setFormData({ ...formData, profile_photo_url: e.target.value })}
+                  className="bg-white border-gray-200"
+                />
                 </div>
 
                 <div>
