@@ -198,7 +198,7 @@ export default function Home() {
       {trainerLoading ? (
         <Skeleton className="h-24 rounded-lg bg-gray-100" />
       ) : (
-        <TrainerCard trainer={trainer} clientName={user?.full_name} />
+        <TrainerCard trainer={trainer} clientName={user?.display_name || user?.full_name} />
       )}
 
       {/* Next Session Card */}

@@ -26,6 +26,7 @@ Deno.serve(async (req) => {
       trainer: {
         id: trainer.id,
         full_name: trainer.full_name,
+        display_name: trainer.display_name,
         profile_photo_url: trainer.profile_photo_url,
         specialties: trainer.specialties || null,
         email: trainer.email
