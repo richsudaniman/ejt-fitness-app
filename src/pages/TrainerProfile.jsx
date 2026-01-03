@@ -42,8 +42,15 @@ export default function TrainerProfile() {
     mutationFn: async (data) => {
       return await base44.auth.updateMe(data);
     },
-    onSuccess: () => {
+    onSuccess: (updatedUser) => {
+      // Update cache immediately
+      queryClient.setQueryData(['currentUser'], updatedUser);
+      
+      // Invalidate queries to ensure freshness everywhere
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] }); // For admin/lists
+      queryClient.invalidateQueries({ queryKey: ['myTrainer'] }); // For client view preview
+      
       toast({
         title: "Profile Updated",
         description: "Your trainer profile has been updated successfully.",
