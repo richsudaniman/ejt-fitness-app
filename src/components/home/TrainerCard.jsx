@@ -13,7 +13,7 @@ export default function TrainerCard({ trainer, clientName }) {
         <div className="flex items-center gap-4">
           <div className="relative">
             {trainer.profile_photo_url ? (
-              <img src={trainer.profile_photo_url} alt={trainer.full_name} className="w-16 h-16 rounded-full object-cover border-3 border-white shadow-lg" />
+              <img src={trainer.profile_photo_url} alt={trainer.display_name || trainer.full_name} className="w-16 h-16 rounded-full object-cover border-3 border-white shadow-lg" />
             ) : (
               <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center border-3 border-white shadow-lg">
                 <User className="w-8 h-8 text-white" />
