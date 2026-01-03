@@ -209,7 +209,7 @@ export default function AdminUsers() {
                         {isEditing ? (
                             <div className="flex flex-col gap-2">
                             <Select
-                                value={editingUser.user_type || (editingUser.role === 'admin' ? 'admin' : 'client')}
+                                value={editingUser.user_type}
                                 onValueChange={(value) => setEditingUser({ ...editingUser, user_type: value })}
                             >
                                 <SelectTrigger className="w-full h-9 bg-gray-50 border-gray-200">
@@ -244,7 +244,10 @@ export default function AdminUsers() {
                             <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => setEditingUser(user)}
+                            onClick={() => {
+                                const userType = user.user_type || (user.role === 'admin' ? 'admin' : 'client');
+                                setEditingUser({ ...user, user_type: userType });
+                            }}
                             className="w-full h-9 bg-gray-50 hover:bg-gray-100 text-gray-600 hover:text-gray-900 justify-between group-hover:bg-[#0ea5e9]/5 group-hover:text-[#0ea5e9] transition-colors"
                             >
                                 <span className="text-xs font-medium">Manage Role</span>
