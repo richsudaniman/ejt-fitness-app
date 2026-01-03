@@ -89,6 +89,7 @@ export default function AdminTrainers() {
       phone: trainer.phone || "",
       bio: trainer.bio || "",
       specialties: trainer.specialties || "",
+      profile_photo_url: trainer.profile_photo_url || "",
     });
     setShowCreateForm(true);
   };
