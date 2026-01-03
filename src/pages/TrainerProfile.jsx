@@ -20,6 +20,7 @@ export default function TrainerProfile() {
 
   const [formData, setFormData] = useState({
     full_name: "",
+    display_name: "",
     bio: "",
     specialties: "",
     phone: "",
@@ -30,6 +31,7 @@ export default function TrainerProfile() {
     if (user) {
       setFormData({
         full_name: user.full_name || "",
+        display_name: user.display_name || user.full_name || "",
         bio: user.bio || "",
         specialties: user.specialties || "",
         phone: user.phone || "",
@@ -123,14 +125,16 @@ export default function TrainerProfile() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="full_name" className="text-sm font-semibold text-gray-700">Full Name</Label>
+                <Label htmlFor="display_name" className="text-sm font-semibold text-gray-700">Display Name</Label>
                 <Input 
-                  id="full_name"
-                  name="full_name"
-                  value={formData.full_name} 
+                  id="display_name"
+                  name="display_name"
+                  value={formData.display_name} 
                   onChange={handleChange}
+                  placeholder={formData.full_name}
                   required
                 />
+                <p className="text-xs text-gray-500">This is how your name will appear to clients.</p>
               </div>
 
               <div className="space-y-2">

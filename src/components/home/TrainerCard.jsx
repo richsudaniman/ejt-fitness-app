@@ -23,7 +23,7 @@ export default function TrainerCard({ trainer, clientName }) {
           </div>
           <div className="flex-1">
             <p className="text-xs text-white/80 font-semibold uppercase tracking-wide">Your Personal Trainer</p>
-            <h3 className="text-xl font-black italic text-white">{trainer.full_name}</h3>
+            <h3 className="text-xl font-black italic text-white">{trainer.display_name || trainer.full_name}</h3>
             {trainer.specialties && (
               <p className="text-xs text-white/90 mt-1 font-medium">{trainer.specialties}</p>
             )}

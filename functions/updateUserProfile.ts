@@ -10,12 +10,13 @@ Deno.serve(async (req) => {
         }
 
         const body = await req.json();
-        const { full_name, bio, specialties, phone, profile_photo_url } = body;
+        const { full_name, display_name, bio, specialties, phone, profile_photo_url } = body;
 
         // Use service role to ensure we have permission to update all fields
         // strictly for the authenticated user
         const updatedUser = await base44.asServiceRole.entities.User.update(user.id, {
             full_name,
+            display_name,
             bio,
             specialties,
             phone,

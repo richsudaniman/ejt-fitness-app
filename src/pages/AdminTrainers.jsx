@@ -359,7 +359,7 @@ export default function AdminTrainers() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start">
                             <div>
-                                <h3 className="font-bold text-gray-900 text-lg truncate">{trainer.full_name || 'Trainer'}</h3>
+                                <h3 className="font-bold text-gray-900 text-lg truncate">{trainer.display_name || trainer.full_name || 'Trainer'}</h3>
                                 <p className="text-sm text-gray-500 truncate">{trainer.email}</p>
                             </div>
                              {isExpanded ? (

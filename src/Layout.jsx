@@ -311,7 +311,7 @@ export default function Layout({ children, currentPageName }) {
                   {user?.full_name?.charAt(0) || 'U'}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-gray-900 truncate">{user?.full_name}</p>
+                  <p className="text-sm font-bold text-gray-900 truncate">{user?.display_name || user?.full_name}</p>
                   <p className="text-xs text-gray-500 truncate">{user?.email}</p>
                 </div>
               </div>
