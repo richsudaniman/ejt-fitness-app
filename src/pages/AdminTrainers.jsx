@@ -23,6 +23,7 @@ export default function AdminTrainers() {
     phone: "",
     bio: "",
     specialties: "",
+    profile_photo_url: "",
   });
 
   const { data: allUsers, isLoading: usersLoading } = useQuery({
