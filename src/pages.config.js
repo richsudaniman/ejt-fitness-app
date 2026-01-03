@@ -19,9 +19,9 @@ import TrainerClientDetail from './pages/TrainerClientDetail';
 import TrainerClients from './pages/TrainerClients';
 import TrainerDashboard from './pages/TrainerDashboard';
 import TrainerMessages from './pages/TrainerMessages';
+import TrainerProfile from './pages/TrainerProfile';
 import TrainerVideos from './pages/TrainerVideos';
 import Workout from './pages/Workout';
-import TrainerProfile from './pages/TrainerProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -47,9 +47,9 @@ export const PAGES = {
     "TrainerClients": TrainerClients,
     "TrainerDashboard": TrainerDashboard,
     "TrainerMessages": TrainerMessages,
+    "TrainerProfile": TrainerProfile,
     "TrainerVideos": TrainerVideos,
     "Workout": Workout,
-    "TrainerProfile": TrainerProfile,
 }
 
 export const pagesConfig = {

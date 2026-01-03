@@ -35,15 +35,18 @@ export default function AdminUsers() {
   });
 
   const handleRoleChange = async (userId, newUserType) => {
+    // Ensure we have a valid user type, default to client if missing
+    const type = newUserType || 'client';
+    
     // Determine system role: Only 'admin' user_type gets 'admin' system role
     // 'trainer' and 'client' user_types get 'user' system role
-    const systemRole = newUserType === 'admin' ? 'admin' : 'user';
+    const systemRole = type === 'admin' ? 'admin' : 'user';
     
     await updateUserMutation.mutateAsync({ 
       userId, 
       data: { 
         role: systemRole,
-        user_type: newUserType 
+        user_type: type 
       } 
     });
   };
