@@ -200,7 +200,7 @@ export default function AdminUsers() {
                     </div>
 
                     <div className="mb-4">
-                        <h3 className="font-bold text-gray-900 truncate text-lg">{user.full_name || 'Unnamed User'}</h3>
+                        <h3 className="font-bold text-gray-900 truncate text-lg">{user.display_name || user.full_name || 'Unnamed User'}</h3>
                         <p className="text-sm text-gray-500 truncate">{user.email}</p>
                         <p className="text-xs text-gray-400 mt-1 font-mono">ID: {user.id.slice(0, 8)}</p>
                     </div>
