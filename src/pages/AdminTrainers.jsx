@@ -19,6 +19,7 @@ export default function AdminTrainers() {
 
   const [formData, setFormData] = useState({
     full_name: "",
+    display_name: "",
     email: "",
     phone: "",
     bio: "",
@@ -64,6 +65,7 @@ export default function AdminTrainers() {
   const resetForm = () => {
     setFormData({
       full_name: "",
+      display_name: "",
       email: "",
       phone: "",
       bio: "",
@@ -85,6 +87,7 @@ export default function AdminTrainers() {
     setEditingTrainer(trainer);
     setFormData({
       full_name: trainer.full_name || "",
+      display_name: trainer.display_name || trainer.full_name || "",
       email: trainer.email || "",
       phone: trainer.phone || "",
       bio: trainer.bio || "",
@@ -243,6 +246,16 @@ export default function AdminTrainers() {
                   onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                   className="bg-white border-gray-200"
                   disabled={!editingTrainer}
+                />
+                </div>
+
+                <div>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Display Name</label>
+                <Input
+                  placeholder="Coach John"
+                  value={formData.display_name}
+                  onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                  className="bg-white border-gray-200"
                 />
                 </div>
 

@@ -418,7 +418,7 @@ export default function TrainerDashboard() {
                           #{index + 1}
                         </div>
                         <div className="flex-1">
-                          <p className="font-bold text-gray-900 text-sm">{item.client.full_name || 'Client'}</p>
+                          <p className="font-bold text-gray-900 text-sm">{item.client.display_name || item.client.full_name || 'Client'}</p>
                           <p className="text-xs text-gray-500">{item.client.email}</p>
                         </div>
                         <div className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -458,7 +458,7 @@ export default function TrainerDashboard() {
                             <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-bold text-gray-900">{client.full_name}</h4>
+                            <h4 className="font-bold text-gray-900">{client.display_name || client.full_name}</h4>
                             <div className="flex flex-wrap gap-2 mt-2">
                               {reasons.map((reason, idx) => (
                                 <span key={idx} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
@@ -589,7 +589,7 @@ export default function TrainerDashboard() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 text-sm">{client.full_name || 'Client'}</p>
+                        <p className="font-bold text-gray-900 text-sm">{client.display_name || client.full_name || 'Client'}</p>
                         <p className="text-xs text-gray-500">{client.email}</p>
                       </div>
                       <div className="bg-[#0ea5e9] text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -626,7 +626,7 @@ export default function TrainerDashboard() {
                         </div>
                         <div className="flex-1">
                           <div className="flex justify-between items-start">
-                            <p className="font-bold text-gray-900 text-sm">{client?.full_name || 'Client'}</p>
+                            <p className="font-bold text-gray-900 text-sm">{client?.display_name || client?.full_name || 'Client'}</p>
                             <span className="text-xs text-gray-400">{format(new Date(activity.date), 'MMM d')}</span>
                           </div>
                           <p className="text-sm text-gray-600 mt-0.5">
