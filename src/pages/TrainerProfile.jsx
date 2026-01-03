@@ -40,7 +40,8 @@ export default function TrainerProfile() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.auth.updateMe(data);
+      // Use User.update instead of auth.updateMe to ensure built-in fields like full_name are updated
+      return await base44.entities.User.update(user.id, data);
     },
     onSuccess: (updatedUser) => {
       // Update cache immediately
