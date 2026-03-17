@@ -19,6 +19,7 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
     duration: "60",
     notes: ""
   });
+  const [editingSessionId, setEditingSessionId] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: sessions = [], isLoading } = useQuery({
@@ -64,10 +65,59 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
     }
   });
 
+  const updateSessionMutation = useMutation({
+    mutationFn: async (data) => {
+      const startDateTime = new Date(selectedDate);
+      const [hours, minutes] = data.time.split(':').map(Number);
+      startDateTime.setHours(hours, minutes, 0, 0);
+
+      return await base44.entities.ScheduledSession.update(editingSessionId, {
+        client_id: data.clientId,
+        start_time: startDateTime.toISOString(),
+        duration_minutes: parseInt(data.duration),
+        notes: data.notes
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trainerSessions'] });
+      setShowScheduleForm(false);
+      setEditingSessionId(null);
+      setSessionForm({ clientId: "", time: "10:00", duration: "60", notes: "" });
+    }
+  });
+
+  const handleEditClick = (session) => {
+    setSelectedDate(new Date(session.start_time));
+    setSessionForm({
+      clientId: session.client_id,
+      time: format(new Date(session.start_time), 'HH:mm'),
+      duration: session.duration_minutes.toString(),
+      notes: session.notes || ""
+    });
+    setEditingSessionId(session.id);
+    setShowScheduleForm(true);
+  };
+
+  const handleCancel = () => {
+    setShowScheduleForm(false);
+    setEditingSessionId(null);
+    setSessionForm({ clientId: "", time: "10:00", duration: "60", notes: "" });
+  };
+
+  const handleSubmit = () => {
+    if (editingSessionId) {
+      updateSessionMutation.mutate(sessionForm);
+    } else {
+      createSessionMutation.mutate(sessionForm);
+    }
+  };
+
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const onDateClick = (day) => {
     setSelectedDate(day);
+    setEditingSessionId(null);
+    setSessionForm({ clientId: "", time: "10:00", duration: "60", notes: "" });
     setShowScheduleForm(true);
   };
 
@@ -262,16 +312,16 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
                   <Button 
                     variant="outline" 
                     className="flex-1"
-                    onClick={() => setShowScheduleForm(false)}
+                    onClick={handleCancel}
                   >
                     Cancel
                   </Button>
                   <Button 
                     className="flex-1 bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold"
-                    disabled={!sessionForm.clientId || createSessionMutation.isPending}
-                    onClick={() => createSessionMutation.mutate(sessionForm)}
+                    disabled={!sessionForm.clientId || createSessionMutation.isPending || (typeof updateSessionMutation !== 'undefined' && updateSessionMutation.isPending)}
+                    onClick={handleSubmit}
                   >
-                    {createSessionMutation.isPending ? 'Scheduling...' : 'Schedule'}
+                    {(createSessionMutation.isPending || (typeof updateSessionMutation !== 'undefined' && updateSessionMutation.isPending)) ? 'Saving...' : editingSessionId ? 'Update' : 'Schedule'}
                   </Button>
                 </div>
               </div>
@@ -300,12 +350,20 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
                           {session.duration_minutes} min • {session.notes || 'No notes'}
                         </p>
                       </div>
-                      <button 
-                        onClick={() => deleteSessionMutation.mutate(session.id)}
-                        className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={() => handleEditClick(session)}
+                          className="text-gray-400 hover:text-[#0ea5e9]"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => deleteSessionMutation.mutate(session.id)}
+                          className="text-gray-400 hover:text-red-500"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })
