@@ -89,7 +89,7 @@ export default function Home() {
   const { data: motivations } = useQuery({
     queryKey: ['motivations', user?.id],
     queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
+      const today = format(new Date(), 'yyyy-MM-dd');
       return await base44.entities.DailyMotivation.filter({
         sent_to_client_id: user.id,
         date: today,
