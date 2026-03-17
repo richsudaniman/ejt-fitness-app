@@ -125,7 +125,7 @@ export default function Home() {
   // Don't fetch goals on home page - not critical
   const goals = [];
 
-  const todayDate = new Date().toISOString().split('T')[0];
+  const todayDate = format(new Date(), 'yyyy-MM-dd');
   const todayWorkout = workoutPlans.find(plan => plan.day_of_week === today);
 
   // Calculate today's tasks

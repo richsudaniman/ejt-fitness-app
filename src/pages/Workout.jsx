@@ -7,6 +7,7 @@ import CustomWorkoutLogger from "../components/workout/CustomWorkoutLogger";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 import { Dumbbell } from "lucide-react";
+import { format } from "date-fns";
 
 export default function Workout() {
   const queryClient = useQueryClient();
@@ -69,7 +70,7 @@ export default function Workout() {
 
   const selectedWorkout = workoutPlans.find(plan => plan.day_of_week === selectedDay);
   
-  const todayDate = new Date().toISOString().split('T')[0];
+  const todayDate = format(new Date(), 'yyyy-MM-dd');
   const completedDays = new Set(
     workoutLogs
       .filter(log => log.completed_date === todayDate)

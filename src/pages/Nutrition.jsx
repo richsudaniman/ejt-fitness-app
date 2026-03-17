@@ -9,6 +9,7 @@ import DailyCheckIn from "../components/nutrition/DailyCheckIn";
 import { Skeleton } from "@/components/ui/skeleton";
 import EmptyState from "../components/EmptyState";
 import { UtensilsCrossed } from "lucide-react";
+import { format } from "date-fns";
 
 export default function Nutrition() {
   const queryClient = useQueryClient();
@@ -51,7 +52,7 @@ export default function Nutrition() {
     refetchOnWindowFocus: false,
   });
 
-  const todayDate = new Date().toISOString().split('T')[0];
+  const todayDate = format(new Date(), 'yyyy-MM-dd');
 
   const { data: dailyStatus, isLoading: statusLoading } = useQuery({
     queryKey: ['dailyNutritionStatus', user?.id, todayDate],

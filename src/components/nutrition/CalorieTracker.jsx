@@ -15,10 +15,10 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
     carbs: "",
     fats: "",
     meal_type: "Breakfast",
-    date: new Date().toISOString().split('T')[0]
+    date: format(new Date(), 'yyyy-MM-dd')
   });
 
-  const todayDate = new Date().toISOString().split('T')[0];
+  const todayDate = format(new Date(), 'yyyy-MM-dd');
   const todayLogs = logs.filter(log => log.date === todayDate);
   const todayCalories = todayLogs.reduce((sum, log) => sum + (parseFloat(log.calories) || 0), 0);
   const todayProtein = todayLogs.reduce((sum, log) => sum + (parseFloat(log.protein) || 0), 0);
@@ -56,7 +56,7 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
       carbs: "",
       fats: "",
       meal_type: "Breakfast",
-      date: new Date().toISOString().split('T')[0]
+      date: format(new Date(), 'yyyy-MM-dd')
     });
     setShowForm(false);
   };
@@ -118,7 +118,7 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
                 value={formData.date}
                 onChange={(e) => setFormData({...formData, date: e.target.value})}
                 className="bg-white"
-                max={new Date().toISOString().split('T')[0]}
+                max={format(new Date(), 'yyyy-MM-dd')}
               />
             </div>
 
