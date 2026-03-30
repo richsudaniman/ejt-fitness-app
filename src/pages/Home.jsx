@@ -112,8 +112,15 @@ export default function Home() {
       // Filter for future dates only and sort
       const now = new Date();
       return sessions
-        .filter(s => new Date(s.start_time) > now)
-        .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+        .filter(s => {
+          const sessionTime = new Date(s.start_time);
+          // If the string doesn't have timezone info (no Z or +), parseISO or new Date parses as local.
+          // In SessionCalendar we used startDateTime.toISOString() so it has Z, 
+          // but sometimes date-fns format changes behavior.
+          // Let's ensure strict comparison
+          return sessionTime.getTime() > now.getTime();
+        })
+        .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
     },
     initialData: [],
     enabled: !!user?.id,

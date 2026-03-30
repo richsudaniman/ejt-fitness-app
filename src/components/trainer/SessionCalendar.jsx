@@ -43,7 +43,8 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
       return await base44.entities.ScheduledSession.create({
         trainer_id: trainerId,
         client_id: data.clientId,
-        start_time: startDateTime.toISOString(),
+        // Save as local timezone string without the Z to prevent UTC shifting when rendering
+        start_time: format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss"),
         duration_minutes: parseInt(data.duration),
         status: 'scheduled',
         notes: data.notes
@@ -73,7 +74,7 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
 
       return await base44.entities.ScheduledSession.update(editingSessionId, {
         client_id: data.clientId,
-        start_time: startDateTime.toISOString(),
+        start_time: format(startDateTime, "yyyy-MM-dd'T'HH:mm:ss"),
         duration_minutes: parseInt(data.duration),
         notes: data.notes
       });
@@ -87,10 +88,11 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
   });
 
   const handleEditClick = (session) => {
-    setSelectedDate(new Date(session.start_time));
+    const sessionDate = new Date(session.start_time);
+    setSelectedDate(sessionDate);
     setSessionForm({
       clientId: session.client_id,
-      time: format(new Date(session.start_time), 'HH:mm'),
+      time: format(sessionDate, 'HH:mm'),
       duration: session.duration_minutes.toString(),
       notes: session.notes || ""
     });
@@ -173,7 +175,10 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
         const cloneDay = day;
         
         // Find sessions for this day
-        const daySessions = sessions.filter(s => isSameDay(new Date(s.start_time), day));
+        const daySessions = sessions.filter(s => {
+            const sessionDate = new Date(s.start_time);
+            return isSameDay(sessionDate, day);
+        });
         const isSelected = isSameDay(day, selectedDate);
         const isCurrentMonth = isSameMonth(day, monthStart);
 
@@ -228,7 +233,7 @@ export default function SessionCalendar({ trainerId, clients = [] }) {
 
   // Get sessions for selected date
   const selectedDateSessions = sessions.filter(s => isSameDay(new Date(s.start_time), selectedDate))
-    .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
