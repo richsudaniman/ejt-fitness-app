@@ -44,23 +44,24 @@ export default function ClientProgress({ clientId }) {
     const today = new Date();
     const thirtyDaysAgo = subDays(today, 30);
     const sevenDaysAgo = subDays(today, 7);
+    const thirtyDaysAgoStr = format(thirtyDaysAgo, 'yyyy-MM-dd');
+    const sevenDaysAgoStr = format(sevenDaysAgo, 'yyyy-MM-dd');
 
     // Workout consistency (last 30 days)
     const recentWorkouts = workoutLogs.filter(log => 
-      new Date(log.completed_date) >= thirtyDaysAgo
+      log.completed_date >= thirtyDaysAgoStr
     );
     const uniqueWorkoutDays = new Set(recentWorkouts.map(log => log.completed_date)).size;
     const workoutConsistency = Math.round((uniqueWorkoutDays / 30) * 100);
 
     // Current streak
     let currentStreak = 0;
-    const sortedDates = [...new Set(workoutLogs.map(log => log.completed_date))].sort((a, b) => 
-      new Date(b) - new Date(a)
-    );
+    const sortedDates = [...new Set(workoutLogs.map(log => log.completed_date))].sort().reverse();
     
     let checkDate = new Date();
+    checkDate.setHours(0,0,0,0);
     for (const dateStr of sortedDates) {
-      const logDate = new Date(dateStr);
+      const logDate = new Date(dateStr + "T00:00:00");
       const daysDiff = Math.floor((checkDate - logDate) / (1000 * 60 * 60 * 24));
       
       if (daysDiff <= 1) {
@@ -73,7 +74,7 @@ export default function ClientProgress({ clientId }) {
 
     // Nutrition adherence (days logged in last 7 days)
     const recentCalorieLogs = calorieLogs.filter(log => 
-      new Date(log.date) >= sevenDaysAgo
+      log.date >= sevenDaysAgoStr
     );
     const uniqueCalorieDays = new Set(recentCalorieLogs.map(log => log.date)).size;
     const nutritionAdherence = Math.round((uniqueCalorieDays / 7) * 100);
@@ -81,7 +82,7 @@ export default function ClientProgress({ clientId }) {
     // Weight progress
     const weightMetrics = progressMetrics
       .filter(m => m.metric_type === 'weight')
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
+      .sort((a, b) => a.date.localeCompare(b.date));
     
     const weightChange = weightMetrics.length >= 2 
       ? (weightMetrics[weightMetrics.length - 1].value - weightMetrics[0].value).toFixed(1)
@@ -94,7 +95,7 @@ export default function ClientProgress({ clientId }) {
     
     const latestStrength = {};
     strengthMetrics.forEach(m => {
-      if (!latestStrength[m.metric_type] || new Date(m.date) > new Date(latestStrength[m.metric_type].date)) {
+      if (!latestStrength[m.metric_type] || m.date > latestStrength[m.metric_type].date) {
         latestStrength[m.metric_type] = m;
       }
     });
@@ -117,10 +118,11 @@ export default function ClientProgress({ clientId }) {
     for (let i = 7; i >= 0; i--) {
       const weekStart = startOfWeek(subDays(new Date(), i * 7));
       const weekEnd = endOfWeek(weekStart);
+      const weekStartStr = format(weekStart, 'yyyy-MM-dd');
+      const weekEndStr = format(weekEnd, 'yyyy-MM-dd');
       
       const workoutsInWeek = workoutLogs.filter(log => {
-        const logDate = new Date(log.completed_date);
-        return logDate >= weekStart && logDate <= weekEnd;
+        return log.completed_date >= weekStartStr && log.completed_date <= weekEndStr;
       }).length;
 
       last8Weeks.push({
@@ -134,9 +136,9 @@ export default function ClientProgress({ clientId }) {
   const getChartData = (metricType) => {
     return progressMetrics
       .filter(m => m.metric_type === metricType)
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .sort((a, b) => a.date.localeCompare(b.date))
       .map(m => ({
-        date: format(new Date(m.date), 'MMM d'),
+        date: format(new Date(m.date + "T00:00:00"), 'MMM d'),
         value: m.value
       }));
   };
@@ -371,7 +373,7 @@ export default function ClientProgress({ clientId }) {
                 {metricTypes.map(type => {
                   const metrics = progressMetrics
                     .filter(m => m.metric_type === type.value)
-                    .sort((a, b) => new Date(b.date) - new Date(a.date));
+                    .sort((a, b) => b.date.localeCompare(a.date));
                   
                   if (metrics.length === 0) return null;
 
@@ -407,7 +409,7 @@ export default function ClientProgress({ clientId }) {
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1.5 text-center font-bold">
-                        {format(new Date(photo.date), 'MMM d, yyyy')}
+                        {format(new Date(photo.date + "T00:00:00"), 'MMM d, yyyy')}
                       </div>
                     </div>
                   ))}
@@ -440,7 +442,7 @@ export default function ClientProgress({ clientId }) {
                       <div className="text-right">
                         <div className="flex items-center gap-1 text-xs text-gray-500">
                           <Calendar className="w-3 h-3" />
-                          <span className="font-semibold">{format(new Date(log.completed_date), 'MMM d')}</span>
+                          <span className="font-semibold">{format(new Date(log.completed_date + "T00:00:00"), 'MMM d')}</span>
                         </div>
                       </div>
                     </div>
@@ -471,7 +473,7 @@ export default function ClientProgress({ clientId }) {
                         <p className="font-black text-orange-600 text-lg">{log.calories}</p>
                         <div className="flex items-center gap-1 text-xs text-gray-500">
                           <Calendar className="w-3 h-3" />
-                          <span className="font-semibold">{format(new Date(log.date), 'MMM d')}</span>
+                          <span className="font-semibold">{format(new Date(log.date + "T00:00:00"), 'MMM d')}</span>
                         </div>
                       </div>
                     </div>

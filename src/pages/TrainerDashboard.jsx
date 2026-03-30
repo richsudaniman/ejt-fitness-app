@@ -92,10 +92,11 @@ export default function TrainerDashboard() {
   const getClientWeeklyWorkouts = (clientId) => {
     const thisWeekStart = new Date();
     thisWeekStart.setDate(thisWeekStart.getDate() - 7);
+    const weekStartStr = format(thisWeekStart, 'yyyy-MM-dd');
     const workoutDates = new Set();
     recentWorkoutLogs.filter(log => 
       log.logged_by_client_id === clientId && 
-      new Date(log.completed_date) >= thisWeekStart
+      log.completed_date >= weekStartStr
     ).forEach(log => workoutDates.add(log.completed_date));
     return workoutDates.size;
   };
@@ -108,6 +109,7 @@ export default function TrainerDashboard() {
     const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgoStr = format(sevenDaysAgo, 'yyyy-MM-dd');
 
     let workoutCompliant = 0;
     let nutritionCompliant = 0;
@@ -119,7 +121,7 @@ export default function TrainerDashboard() {
       // Workout compliance: has logged at least 3 workouts in last 7 days
       const clientWorkouts = recentWorkoutLogs.filter(log => 
         log.logged_by_client_id === clientId &&
-        new Date(log.completed_date) >= sevenDaysAgo
+        log.completed_date >= sevenDaysAgoStr
       );
       const uniqueWorkoutDays = new Set(clientWorkouts.map(w => w.completed_date)).size;
       if (uniqueWorkoutDays >= 3) workoutCompliant++;
@@ -128,7 +130,7 @@ export default function TrainerDashboard() {
       const calorieTarget = client?.daily_calorie_target || 2200;
       const clientCalorieLogs = recentCalorieLogs.filter(log =>
         log.logged_by_client_id === clientId &&
-        new Date(log.date) >= sevenDaysAgo
+        log.date >= sevenDaysAgoStr
       );
       
       const dailyCalories = {};
@@ -170,12 +172,13 @@ export default function TrainerDashboard() {
       const today = new Date();
       const sevenDaysAgo = new Date(today);
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      const sevenDaysAgoStr = format(sevenDaysAgo, 'yyyy-MM-dd');
 
       // Check for missed workouts (no workout logs in last 7 days but has assigned plans)
       const clientPlans = allWorkoutPlans.filter(p => p.assigned_to_client_id === clientId);
       const recentWorkouts = recentWorkoutLogs.filter(log =>
         log.logged_by_client_id === clientId &&
-        new Date(log.completed_date) >= sevenDaysAgo
+        log.completed_date >= sevenDaysAgoStr
       );
       
       if (clientPlans.length > 0 && recentWorkouts.length === 0) {
@@ -186,7 +189,7 @@ export default function TrainerDashboard() {
       const calorieTarget = client.daily_calorie_target || 2200;
       const clientCalorieLogs = recentCalorieLogs.filter(log =>
         log.logged_by_client_id === clientId &&
-        new Date(log.date) >= sevenDaysAgo
+        log.date >= sevenDaysAgoStr
       );
 
       const dailyCalories = {};
@@ -230,11 +233,12 @@ export default function TrainerDashboard() {
     const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgoStr = format(sevenDaysAgo, 'yyyy-MM-dd');
 
     // Workout compliance (50%): 3+ workouts = 100%
     const clientWorkouts = recentWorkoutLogs.filter(log => 
       log.logged_by_client_id === clientId &&
-      new Date(log.completed_date) >= sevenDaysAgo
+      log.completed_date >= sevenDaysAgoStr
     );
     const uniqueWorkoutDays = new Set(clientWorkouts.map(w => w.completed_date)).size;
     const workoutScore = Math.min((uniqueWorkoutDays / 3) * 100, 100);
@@ -243,7 +247,7 @@ export default function TrainerDashboard() {
     const calorieTarget = client.daily_calorie_target || 2200;
     const clientCalorieLogs = recentCalorieLogs.filter(log =>
       log.logged_by_client_id === clientId &&
-      new Date(log.date) >= sevenDaysAgo
+      log.date >= sevenDaysAgoStr
     );
     
     const dailyCalories = {};
@@ -319,8 +323,8 @@ export default function TrainerDashboard() {
       ...Object.values(workoutCompletions),
       ...mealLogs
     ].sort((a, b) => {
-      const dateA = new Date(a.created || a.date);
-      const dateB = new Date(b.created || b.date);
+      const dateA = new Date(a.created || (a.date + "T00:00:00")).getTime();
+      const dateB = new Date(b.created || (b.date + "T00:00:00")).getTime();
       return dateB - dateA;
     });
 
@@ -627,7 +631,7 @@ export default function TrainerDashboard() {
                         <div className="flex-1">
                           <div className="flex justify-between items-start">
                             <p className="font-bold text-gray-900 text-sm">{client?.display_name || client?.full_name || 'Client'}</p>
-                            <span className="text-xs text-gray-400">{format(new Date(activity.date), 'MMM d')}</span>
+                            <span className="text-xs text-gray-400">{format(new Date(activity.date + "T00:00:00"), 'MMM d')}</span>
                           </div>
                           <p className="text-sm text-gray-600 mt-0.5">
                             {activity.type === 'workout' 

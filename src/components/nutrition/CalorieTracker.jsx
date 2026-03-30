@@ -211,7 +211,7 @@ export default function CalorieTracker({ logs = [], onAddLog, onDeleteLog, daily
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
                       <Calendar className="w-3 h-3" />
-                      {format(new Date(log.date), 'MMM d, yyyy')}
+                      {format(new Date(log.date + "T00:00:00"), 'MMM d, yyyy')}
                     </div>
                   </div>
                   <Button

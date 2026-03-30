@@ -139,10 +139,10 @@ export default function Home() {
 
   // Calculate stats
   const thisWeekLogs = workoutLogs.filter(log => {
-    const logDate = new Date(log.completed_date);
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
-    return logDate >= weekAgo;
+    const weekAgoStr = format(weekAgo, 'yyyy-MM-dd');
+    return log.completed_date >= weekAgoStr;
   });
 
   const todayCalories = calorieLogs

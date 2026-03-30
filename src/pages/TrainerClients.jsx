@@ -87,9 +87,11 @@ export default function TrainerClients() {
   const getClientStats = (clientId) => {
     const thisWeekStart = new Date();
     thisWeekStart.setDate(thisWeekStart.getDate() - 7);
+    const weekStartStr = format(thisWeekStart, 'yyyy-MM-dd');
+    
     const clientLogs = workoutLogs.filter(log => 
       log.logged_by_client_id === clientId && 
-      new Date(log.completed_date) >= thisWeekStart
+      log.completed_date >= weekStartStr
     );
     const activeGoals = allGoals.filter(g => g.assigned_to_client_id === clientId);
     const workoutPlans = allWorkoutPlans.filter(p => p.assigned_to_client_id === clientId);
@@ -106,7 +108,7 @@ export default function TrainerClients() {
     const calorieTarget = client?.daily_calorie_target || 2200;
     const clientCalorieLogs = calorieLogs.filter(log =>
       log.logged_by_client_id === clientId &&
-      new Date(log.date) >= thisWeekStart
+      log.date >= weekStartStr
     );
     
     const dailyCalories = {};
