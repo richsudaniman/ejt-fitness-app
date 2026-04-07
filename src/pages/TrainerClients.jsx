@@ -41,7 +41,7 @@ export default function TrainerClients() {
     queryKey: ['allWorkoutLogs', user?.id],
     queryFn: async () => {
       if (clientIds.length === 0) return [];
-      const allLogs = await base44.entities.WorkoutLog.list('-completed_date', 200);
+      const allLogs = await base44.entities.WorkoutLog.list('-completed_date', 1000);
       return allLogs.filter(log => clientIds.includes(log.logged_by_client_id));
     },
     initialData: [],
@@ -52,7 +52,7 @@ export default function TrainerClients() {
     queryKey: ['allCalorieLogs', user?.id],
     queryFn: async () => {
       if (clientIds.length === 0) return [];
-      const allLogs = await base44.entities.CalorieLog.list('-created_date', 200);
+      const allLogs = await base44.entities.CalorieLog.list('-date', 1000);
       return allLogs.filter(log => clientIds.includes(log.logged_by_client_id));
     },
     initialData: [],

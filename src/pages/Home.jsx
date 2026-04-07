@@ -78,7 +78,7 @@ export default function Home() {
   const { data: calorieLogs, isLoading: calorieLogsLoading } = useQuery({
     queryKey: ['calorieLogs', user?.id],
     queryFn: async () => {
-      return await base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date');
+      return await base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-date', 500);
     },
     initialData: [],
     enabled: !!user?.id,

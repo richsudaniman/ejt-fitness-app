@@ -73,7 +73,7 @@ export default function TrainerDashboard() {
 
   const { data: recentWorkoutLogs = [], isLoading: workoutLogsLoading } = useQuery({
     queryKey: ['recentWorkoutLogs', assignments],
-    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 100),
+    queryFn: () => base44.entities.WorkoutLog.list('-completed_date', 1000),
     enabled: !!trainer?.id && assignments.length > 0,
     staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -81,7 +81,7 @@ export default function TrainerDashboard() {
 
   const { data: recentCalorieLogs = [], isLoading: calorieLogsLoading } = useQuery({
     queryKey: ['recentCalorieLogs', assignments],
-    queryFn: () => base44.entities.CalorieLog.list('-created_date', 100),
+    queryFn: () => base44.entities.CalorieLog.list('-date', 1000),
     enabled: !!trainer?.id && assignments.length > 0,
     staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,

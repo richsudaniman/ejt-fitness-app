@@ -14,9 +14,11 @@ export default function NutritionAnalytics({ logs, dailyTarget }) {
     : subDays(today, 30);
 
   // Filter logs by date range
+  const startDateStr = format(startDate, 'yyyy-MM-dd');
+  const todayStr = format(today, 'yyyy-MM-dd');
+
   const filteredLogs = logs.filter(log => {
-    const logDate = new Date(log.date);
-    return logDate >= startDate && logDate <= today;
+    return log.date >= startDateStr && log.date <= todayStr;
   });
 
   // Calculate daily totals
@@ -39,10 +41,10 @@ export default function NutritionAnalytics({ logs, dailyTarget }) {
 
   // Convert to array and sort
   const dailyData = Object.values(dailyTotals)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .sort((a, b) => a.date.localeCompare(b.date))
     .map(day => ({
       ...day,
-      shortDate: format(new Date(day.date), 'MM/dd')
+      shortDate: format(new Date(day.date + "T00:00:00"), 'MM/dd')
     }));
 
   // Calculate averages

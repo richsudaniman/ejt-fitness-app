@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Camera, Loader2, Plus, AlertCircle, Scan, X, Package } from "lucide-react";
+import { format } from "date-fns";
 
 export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
   const [analyzing, setAnalyzing] = useState(false);
@@ -118,7 +119,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
             setResults(foodResult);
             stopCamera();
             
-            const today = new Date().toISOString().split('T')[0];
+            const today = format(new Date(), 'yyyy-MM-dd');
             await onFoodAnalyzed({
               date: today,
               meal_name: foodResult.name,
@@ -165,7 +166,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
 
       setResults(result);
       
-      const today = new Date().toISOString().split('T')[0];
+      const today = format(new Date(), 'yyyy-MM-dd');
       await onFoodAnalyzed({
         date: today,
         meal_name: result.name,
@@ -213,7 +214,7 @@ export default function FoodPhotoAnalyzer({ onFoodAnalyzed }) {
 
       setResults(result);
       
-      const today = new Date().toISOString().split('T')[0];
+      const today = format(new Date(), 'yyyy-MM-dd');
       await onFoodAnalyzed({
         date: today,
         meal_name: result.name,

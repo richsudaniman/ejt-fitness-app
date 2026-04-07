@@ -43,7 +43,7 @@ export default function Nutrition() {
   const { data: calorieLogs = [], isLoading: logsLoading } = useQuery({
     queryKey: ['calorieLogs', user?.id],
     queryFn: async () => {
-      const logs = await base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-created_date');
+      const logs = await base44.entities.CalorieLog.filter({ logged_by_client_id: user.id }, '-date', 500);
       // Double check filter on client side to ensure data privacy
       return logs.filter(log => log.logged_by_client_id === user.id);
     },
