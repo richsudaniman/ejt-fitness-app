@@ -1,0 +1,71 @@
+{
+  "name": "ExerciseVideo",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Title of the exercise or lesson"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the exercise or what the video teaches"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "URL to the video"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "URL to video thumbnail image"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "chest",
+        "back",
+        "legs",
+        "shoulders",
+        "arms",
+        "core",
+        "cardio",
+        "mobility",
+        "tutorial",
+        "education"
+      ],
+      "description": "Category of the video"
+    },
+    "duration_minutes": {
+      "type": "integer",
+      "description": "Duration of video in minutes"
+    },
+    "difficulty_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "description": "Difficulty level"
+    },
+    "uploaded_by_trainer_id": {
+      "type": "string",
+      "description": "ID of trainer who uploaded this"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for searching and filtering"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Trainer notes or form cues"
+    }
+  },
+  "required": [
+    "title",
+    "video_url",
+    "category"
+  ]
+}

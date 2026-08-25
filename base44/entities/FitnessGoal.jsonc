@@ -1,0 +1,61 @@
+{
+  "name": "FitnessGoal",
+  "type": "object",
+  "properties": {
+    "assigned_to_client_id": {
+      "type": "string",
+      "description": "ID of the client this goal is assigned to"
+    },
+    "created_by_trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer who created this goal"
+    },
+    "goal_title": {
+      "type": "string",
+      "description": "Goal title"
+    },
+    "target_value": {
+      "type": "string",
+      "description": "Target value (e.g., 180 lbs, 15% body fat)"
+    },
+    "current_value": {
+      "type": "string",
+      "description": "Current value"
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target completion date"
+    },
+    "progress_percentage": {
+      "type": "number",
+      "description": "Progress percentage (0-100)"
+    },
+    "linked_metric_type": {
+      "type": "string",
+      "enum": [
+        "weight",
+        "body_fat",
+        "muscle_mass",
+        "chest",
+        "waist",
+        "hips",
+        "arms",
+        "legs",
+        "max_bench",
+        "max_squat",
+        "max_deadlift"
+      ],
+      "description": "The specific metric type this goal tracks"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether goal is active"
+    }
+  },
+  "required": [
+    "goal_title",
+    "target_value"
+  ]
+}

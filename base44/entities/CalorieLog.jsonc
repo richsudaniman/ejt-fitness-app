@@ -1,0 +1,51 @@
+{
+  "name": "CalorieLog",
+  "type": "object",
+  "properties": {
+    "logged_by_client_id": {
+      "type": "string",
+      "description": "ID of the client who logged this"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of log"
+    },
+    "meal_name": {
+      "type": "string",
+      "description": "Meal or snack name"
+    },
+    "calories": {
+      "type": "number",
+      "description": "Calories consumed"
+    },
+    "protein": {
+      "type": "number",
+      "description": "Protein in grams"
+    },
+    "carbs": {
+      "type": "number",
+      "description": "Carbs in grams"
+    },
+    "fats": {
+      "type": "number",
+      "description": "Fats in grams"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Snack"
+      ],
+      "description": "Type of meal"
+    }
+  },
+  "required": [
+    "logged_by_client_id",
+    "date",
+    "meal_name",
+    "calories"
+  ]
+}

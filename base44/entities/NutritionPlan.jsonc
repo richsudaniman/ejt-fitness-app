@@ -1,0 +1,51 @@
+{
+  "name": "NutritionPlan",
+  "type": "object",
+  "properties": {
+    "assigned_to_client_id": {
+      "type": "string",
+      "description": "ID of the client this plan is assigned to"
+    },
+    "created_by_trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer who created this plan"
+    },
+    "meal_name": {
+      "type": "string",
+      "description": "Name of the meal (e.g., Breakfast, Lunch, Dinner, Snack)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Meal description or recipe"
+    },
+    "calories": {
+      "type": "number",
+      "description": "Total calories"
+    },
+    "protein": {
+      "type": "number",
+      "description": "Protein in grams"
+    },
+    "carbs": {
+      "type": "number",
+      "description": "Carbohydrates in grams"
+    },
+    "fats": {
+      "type": "number",
+      "description": "Fats in grams"
+    },
+    "meal_time": {
+      "type": "string",
+      "description": "Suggested time (e.g., 7:00 AM)"
+    },
+    "order": {
+      "type": "integer",
+      "description": "Order in the day"
+    }
+  },
+  "required": [
+    "meal_name",
+    "description",
+    "calories"
+  ]
+}

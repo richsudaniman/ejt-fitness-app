@@ -1,0 +1,70 @@
+{
+  "name": "WorkoutPlan",
+  "type": "object",
+  "properties": {
+    "assigned_to_client_id": {
+      "type": "string",
+      "description": "ID of the client this plan is assigned to"
+    },
+    "created_by_trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer who created this plan"
+    },
+    "day_of_week": {
+      "type": "string",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "description": "Day of the week"
+    },
+    "workout_type": {
+      "type": "string",
+      "description": "Type of workout (e.g., Push Day, Pull Day, Leg Day)"
+    },
+    "exercises": {
+      "type": "array",
+      "description": "List of exercises for the day",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Exercise name"
+          },
+          "reps": {
+            "type": "integer",
+            "description": "Number of repetitions"
+          },
+          "sets": {
+            "type": "integer",
+            "description": "Number of sets"
+          },
+          "video_url": {
+            "type": "string",
+            "description": "URL to form demonstration video"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional instructions"
+          }
+        }
+      }
+    },
+    "order": {
+      "type": "integer",
+      "description": "Order in the week (1-7)"
+    }
+  },
+  "required": [
+    "day_of_week",
+    "workout_type",
+    "exercises",
+    "order"
+  ]
+}

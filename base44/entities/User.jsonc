@@ -1,0 +1,49 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "display_name": {
+      "type": "string",
+      "description": "Custom display name for the user, overrides full_name"
+    },
+    "assigned_trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer assigned to this client"
+    },
+    "user_type": {
+      "type": "string",
+      "enum": [
+        "client",
+        "trainer",
+        "admin"
+      ],
+      "default": "client",
+      "description": "Type of user - client, trainer, or admin"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "bio": {
+      "type": "string",
+      "description": "User biography or description"
+    },
+    "specialties": {
+      "type": "string",
+      "description": "Trainer specialties (for trainers only)"
+    },
+    "profile_photo_url": {
+      "type": "string",
+      "description": "URL to profile photo"
+    },
+    "daily_calorie_target": {
+      "type": "number",
+      "description": "Daily calorie target"
+    },
+    "daily_protein_target": {
+      "type": "number",
+      "description": "Daily protein target in grams"
+    }
+  },
+  "required": []
+}

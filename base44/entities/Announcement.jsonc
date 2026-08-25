@@ -1,0 +1,57 @@
+{
+  "name": "Announcement",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Announcement title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Announcement message content"
+    },
+    "target_audience": {
+      "type": "string",
+      "enum": [
+        "all",
+        "trainers",
+        "clients"
+      ],
+      "description": "Who should receive this announcement"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "default": "normal",
+      "description": "Priority level of the announcement"
+    },
+    "created_by_admin_id": {
+      "type": "string",
+      "description": "ID of admin who created this announcement"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the announcement was sent"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional: Schedule announcement for future date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this announcement is active"
+    }
+  },
+  "required": [
+    "title",
+    "message",
+    "target_audience"
+  ]
+}

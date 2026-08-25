@@ -1,0 +1,28 @@
+{
+  "name": "TrainerNote",
+  "type": "object",
+  "properties": {
+    "trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer who created this note"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client this note is about"
+    },
+    "title": {
+      "type": "string",
+      "description": "Note title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Note content"
+    }
+  },
+  "required": [
+    "trainer_id",
+    "client_id",
+    "title",
+    "content"
+  ]
+}

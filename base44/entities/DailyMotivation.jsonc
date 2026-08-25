@@ -1,0 +1,32 @@
+{
+  "name": "DailyMotivation",
+  "type": "object",
+  "properties": {
+    "message": {
+      "type": "string",
+      "description": "Motivational message or tip"
+    },
+    "sent_to_client_id": {
+      "type": "string",
+      "description": "ID of the client this message is for"
+    },
+    "sent_by_trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer who sent this"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the message is for"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this message is active"
+    }
+  },
+  "required": [
+    "message",
+    "date"
+  ]
+}

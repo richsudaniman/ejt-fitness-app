@@ -1,0 +1,38 @@
+{
+  "name": "ProgressPhoto",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client this photo belongs to"
+    },
+    "photo_url": {
+      "type": "string",
+      "description": "URL to the uploaded photo"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date photo was taken"
+    },
+    "view_type": {
+      "type": "string",
+      "enum": [
+        "front",
+        "back",
+        "side",
+        "other"
+      ],
+      "description": "Type of view in the photo"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about this photo"
+    }
+  },
+  "required": [
+    "client_id",
+    "photo_url",
+    "date"
+  ]
+}

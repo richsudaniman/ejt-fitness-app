@@ -1,0 +1,32 @@
+{
+  "name": "TrainerClientAssignment",
+  "type": "object",
+  "properties": {
+    "trainer_id": {
+      "type": "string",
+      "description": "ID of the trainer"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client"
+    },
+    "assigned_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when client was assigned to trainer"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this assignment is currently active"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about the client"
+    }
+  },
+  "required": [
+    "trainer_id",
+    "client_id"
+  ]
+}

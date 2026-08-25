@@ -1,0 +1,32 @@
+{
+  "name": "DailyNutritionStatus",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string",
+      "description": "ID of the client"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the status"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "hit",
+        "missed"
+      ],
+      "description": "Whether the target was hit or missed"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes"
+    }
+  },
+  "required": [
+    "client_id",
+    "date",
+    "status"
+  ]
+}

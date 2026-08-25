@@ -1,0 +1,43 @@
+{
+  "name": "WorkoutLog",
+  "type": "object",
+  "properties": {
+    "logged_by_client_id": {
+      "type": "string",
+      "description": "ID of the client who logged this"
+    },
+    "workout_plan_id": {
+      "type": "string",
+      "description": "Reference to WorkoutPlan"
+    },
+    "exercise_name": {
+      "type": "string",
+      "description": "Name of the exercise"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when completed"
+    },
+    "sets_completed": {
+      "type": "integer",
+      "description": "Number of sets completed"
+    },
+    "weight_used": {
+      "type": "number",
+      "description": "Weight used in lbs"
+    },
+    "reps_completed": {
+      "type": "integer",
+      "description": "Reps completed per set"
+    },
+    "notes": {
+      "type": "string",
+      "description": "User notes"
+    }
+  },
+  "required": [
+    "exercise_name",
+    "completed_date"
+  ]
+}
