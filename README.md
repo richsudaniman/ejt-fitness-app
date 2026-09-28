@@ -22,32 +22,67 @@ A fitness agency platform in production use by EJT Fitness to manage
 
 ## 📑 Table of Contents
 
-- [My Role](#my-role)
+- [Architecture](#️-architecture)
+- [Design Decisions](#-design-decisions)
+- [Challenges](#-challenges)
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Getting Started](#-getting-started)
 
-## My Role
+## 🏗️ Architecture
 
-I designed and built this app for EJT Fitness using Base44, an AI-powered
-app platform that provides authentication, database, hosting, and AI-assisted
-code generation. I used Base44 to move fast on scaffolding and standard UI,
-and hand-built the parts that needed custom logic:
+```mermaid
+flowchart LR
+    subgraph Client["React SPA (Vite)"]
+        P["Role-based pages<br/>Client · Trainer · Admin"]
+        Q["TanStack Query<br/>server-state cache"]
+    end
+    subgraph Base44["Base44 platform"]
+        A["Auth"]
+        E["Entities DB<br/>16 schemas"]
+        F["Serverless functions<br/>9 Deno functions"]
+        L["Core integrations<br/>InvokeLLM · UploadFile"]
+    end
+    P --> Q --> A
+    Q --> E
+    Q --> F
+    P --> L
+    F -->|service role| E
+```
 
-- **Passio API integration:** built the full integration with Passio's food
-  recognition API myself, powering meal identification from photos, image
-  uploads, and barcode entry
-- **AI calorie reader:** hand-coded the calorie reading flow using Base44's
-  InvokeLLM, turning food images into structured calorie and macro data
-- **Progress analytics:** hand-coded the analytics that turn client data
-  (weight, body composition, lifts, goals) into trends trainers and clients
-  can act on
-- **Trainer–client assignment debugging:** diagnosed and fixed issues in how
-  clients were assigned to trainers, making sure each trainer saw the right
-  clients and each client got the right plans
-- **Client delivery:** worked with EJT Fitness to gather requirements, roll
-  the app out to their 32 clients, and iterate based on feedback
+- **Frontend:** a React 18 single-page app. Pages are split by role (client, trainer, admin) and gated by `AuthGuard` / `ProtectedRoute`. TanStack Query handles fetching, caching and invalidation.
+- **Data model:** 16 entities, defined as JSONC schemas in `base44/entities/`:
+  - **People:** `User`, `TrainerClientAssignment`
+  - **Training:** `WorkoutPlan`, `WorkoutLog`, `ScheduledSession`, `ExerciseVideo`, `TrainerNote`
+  - **Nutrition:** `NutritionPlan`, `CalorieLog`, `DailyNutritionStatus`
+  - **Progress:** `ProgressMetric`, `ProgressPhoto`, `FitnessGoal`
+  - **Communication:** `ChatMessage`, `Announcement`, `DailyMotivation`
+- **Backend functions:** 9 Deno serverless functions in `base44/functions/`. They handle operations that need elevated permissions, such as assigning clients, inviting users, sending announcements, updating calorie goals, and looking up a client's trainer.
+- **AI pipeline:** photo → `UploadFile` → `InvokeLLM` with a JSON schema → a structured `{ name, calories, protein, carbs, fats }` result → saved as a `CalorieLog` entry.
+
+## 🧠 Design Decisions
+
+- **Why Base44:** EJT is a small agency with 2 trainers. They needed production auth, a database and hosting quickly, without anyone maintaining servers. The trade-off is less control over things like built-in user roles (see Challenges).
+- **Privileged logic on the server:** the client SDK runs as the logged-in user. Anything that touches other users' records, like assigning a client to a trainer, runs in a server function with explicit permission checks. Trainers can only assign clients to themselves, and only admins can reassign between trainers.
+- **Schema-constrained LLM output:** every `InvokeLLM` call includes a `response_json_schema`. The model's answer comes back as typed nutrition data that can be written straight to the database, not free text that needs parsing.
+- **One camera button:** a captured frame is first checked for a barcode. If there isn't one, the app analyzes it as a food photo, so users don't have to pick a mode.
+
+## 🐛 Challenges
+
+### 1. Trainer–client assignments drifting out of sync
+The trainer–client relationship lives in two places: `TrainerClientAssignment` records, and an `assigned_trainer_id` field on `User` for quick "who is my trainer" lookups. When the two disagreed, clients couldn't see their trainer and trainers saw the wrong roster.
+
+**Fix:**
+- `assignClientToTrainer` now updates both in one server-side operation. It deactivates old assignments, updates the user, and then reactivates or creates the assignment.
+- `syncTrainerAssignments` and `fixTrainerAssignments` are admin-only jobs that backfill existing data.
+- I built an internal **Diagnostic Tool** page. It looks up a client by email, compares both sources of truth, reports mismatches, and offers a one-click auto-fix.
+
+### 2. Trainers not recognized as trainers
+The platform's built-in `role` field couldn't reliably tell trainers apart from clients, so trainer-only screens and permissions broke. **Fix:** I added a custom `user_type` field. Permission checks accept either `user_type` or `role`.
+
+### 3. In-browser camera capture on mobile
+The live camera uses `getUserMedia` with the rear camera. It needed `playsInline` and `muted` to play inline on iOS, and explicit track cleanup on close and unmount so the camera doesn't stay on after the user leaves the screen.
 
 ## ✨ Features
 
@@ -80,7 +115,7 @@ The app supports three roles, each with its own dashboard.
 | **Data & State** | TanStack Query, React Hook Form, Zod |
 | **Charts** | Recharts |
 | **Backend / Platform** | Base44 (auth, database, hosting, serverless functions) |
-| **AI & APIs** | Passio food recognition API, Base44 InvokeLLM |
+| **AI** | Base44 InvokeLLM (vision + structured JSON output) |
 | **Tooling** | ESLint, TypeScript type-checking, PostCSS |
 
 ## 📁 Project Structure
