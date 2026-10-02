@@ -1,54 +1,152 @@
-# EJT Fitness
+<div align="center">
 
-The platform EJT Fitness uses to run their agency - currently 2 trainers and 32 clients on it in production.
+# 🏋️ EJT Fitness
 
-Trainers assign workout plans and keep an eye on their clients, clients log workouts, meals and progress, and admins manage who's assigned to who.
+**An agency platform EJT Fitness uses to manage its trainers and clients.**
 
-## what it does
+![Status](https://img.shields.io/badge/status-in%20production-brightgreen)
+![Trainers](https://img.shields.io/badge/trainers-2-orange)
+![Clients](https://img.shields.io/badge/active%20clients-32-blue)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack_Query-5-FF4154?logo=reactquery&logoColor=white)
+![Base44](https://img.shields.io/badge/Built_with-Base44-000000)
 
-**Clients**
-- follow the workout plans their trainer assigns
-- log meals by photo, image upload, or barcode - calories and macros are tracked automatically
-- track weight, body composition and lifts over time
-- articles and videos from the coaching team
-- chat with their trainer
+</div>
 
-**Trainers**
-- client roster, drill into each client
-- assign and monitor workout plans
-- message clients, share exercise videos
-- manage their profile
+---
 
-**Admins**
-- usage + progress analytics
-- invite users, manage trainer-client assignments
-- announcements, educational content, videos
+A fitness agency platform in production use by EJT Fitness to manage
+**2 trainers and 32 clients**.
 
-## how it's built
+## 📑 Table of Contents
 
-React 18 + Vite, TanStack Query, Tailwind/shadcn, Recharts. Base44 for auth, database, hosting and serverless functions.
+- [Architecture](#️-architecture)
+- [Design Decisions](#-design-decisions)
+- [Challenges](#-challenges)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
 
-**Why Base44:** EJT is a small agency. They needed real auth, a database and hosting fast, without anyone maintaining servers. The trade-off is less control over things like the built-in user roles, which bit me (see below).
+## 🏗️ Architecture
 
-- 16 entities in `base44/entities/` covering people/assignments, training (plans, logs, sessions, videos, trainer notes), nutrition, progress (metrics, photos, goals) and communication (chat, announcements, daily motivation)
-- 9 Deno serverless functions for anything that touches other users' records - assigning clients, inviting users, announcements, updating calorie goals, looking up a client's trainer. trainers can only assign clients to themselves, only admins can reassign between trainers
-- food photos: `UploadFile` -> `InvokeLLM` with a JSON schema -> `{ name, calories, protein, carbs, fats }` -> saved as a `CalorieLog`. the schema means it comes back as typed data I can write straight to the DB instead of text I'd have to parse
-- one camera button: it checks the frame for a barcode first, and if there isn't one it treats it as a food photo, so users don't have to pick a mode
+```mermaid
+flowchart LR
+    subgraph Client["React SPA (Vite)"]
+        P["Role-based pages<br/>Client · Trainer · Admin"]
+        Q["TanStack Query<br/>server-state cache"]
+    end
+    subgraph Base44["Base44 platform"]
+        A["Auth"]
+        E["Entities DB<br/>16 schemas"]
+        F["Serverless functions<br/>9 Deno functions"]
+        L["Core integrations<br/>InvokeLLM · UploadFile"]
+    end
+    P --> Q --> A
+    Q --> E
+    Q --> F
+    P --> L
+    F -->|service role| E
+```
 
-## things that broke
+- **Frontend:** a React 18 single-page app. Pages are split by role (client, trainer, admin) and gated by `AuthGuard` / `ProtectedRoute`. TanStack Query handles fetching, caching and invalidation.
+- **Data model:** 16 entities, defined as JSONC schemas in `base44/entities/`:
+  - **People:** `User`, `TrainerClientAssignment`
+  - **Training:** `WorkoutPlan`, `WorkoutLog`, `ScheduledSession`, `ExerciseVideo`, `TrainerNote`
+  - **Nutrition:** `NutritionPlan`, `CalorieLog`, `DailyNutritionStatus`
+  - **Progress:** `ProgressMetric`, `ProgressPhoto`, `FitnessGoal`
+  - **Communication:** `ChatMessage`, `Announcement`, `DailyMotivation`
+- **Backend functions:** 9 Deno serverless functions in `base44/functions/`. They handle operations that need elevated permissions, such as assigning clients, inviting users, sending announcements, updating calorie goals, and looking up a client's trainer.
+- **AI pipeline:** photo → `UploadFile` → `InvokeLLM` with a JSON schema → a structured `{ name, calories, protein, carbs, fats }` result → saved as a `CalorieLog` entry.
 
-**Trainer-client assignments drifting out of sync.** The relationship lived in two places: `TrainerClientAssignment` records and an `assigned_trainer_id` field on `User` (for quick "who's my trainer" lookups). When they disagreed, clients couldn't see their trainer and trainers saw the wrong roster. What I did:
-- `assignClientToTrainer` now updates both in one server-side operation (deactivates old assignments, updates the user, then reactivates or creates the assignment)
-- `syncTrainerAssignments` and `fixTrainerAssignments` are admin-only jobs to backfill existing data
-- built an internal diagnostic page - look up a client by email, compare both sources, see mismatches, one-click fix
+## 🧠 Design Decisions
 
-**Trainers not being recognized as trainers.** The platform's built-in `role` field couldn't reliably tell trainers from clients, so trainer-only screens and permissions broke. Added a custom `user_type` field, and permission checks accept either `user_type` or `role`.
+- **Why Base44:** EJT is a small agency with 2 trainers. They needed production auth, a database and hosting quickly, without anyone maintaining servers. The trade-off is less control over things like built-in user roles (see Challenges).
+- **Privileged logic on the server:** the client SDK runs as the logged-in user. Anything that touches other users' records, like assigning a client to a trainer, runs in a server function with explicit permission checks. Trainers can only assign clients to themselves, and only admins can reassign between trainers.
+- **Schema-constrained LLM output:** every `InvokeLLM` call includes a `response_json_schema`. The model's answer comes back as typed nutrition data that can be written straight to the database, not free text that needs parsing.
+- **One camera button:** a captured frame is first checked for a barcode. If there isn't one, the app analyzes it as a food photo, so users don't have to pick a mode.
 
-**Camera on mobile.** The live camera uses `getUserMedia` with the rear camera. On iOS it needed `playsInline` and `muted` to play inline, and I had to explicitly stop the tracks on close/unmount or the camera would stay on after leaving the screen.
+## 🐛 Challenges
 
-## running it
+### 1. Trainer–client assignments drifting out of sync
+The trainer–client relationship lives in two places: `TrainerClientAssignment` records, and an `assigned_trainer_id` field on `User` for quick "who is my trainer" lookups. When the two disagreed, clients couldn't see their trainer and trainers saw the wrong roster.
 
-Needs Node 18+ and a Base44 account/app.
+**Fix:**
+- `assignClientToTrainer` now updates both in one server-side operation. It deactivates old assignments, updates the user, and then reactivates or creates the assignment.
+- `syncTrainerAssignments` and `fixTrainerAssignments` are admin-only jobs that backfill existing data.
+- I built an internal **Diagnostic Tool** page. It looks up a client by email, compares both sources of truth, reports mismatches, and offers a one-click auto-fix.
+
+### 2. Trainers not recognized as trainers
+The platform's built-in `role` field couldn't reliably tell trainers apart from clients, so trainer-only screens and permissions broke. **Fix:** I added a custom `user_type` field. Permission checks accept either `user_type` or `role`.
+
+### 3. In-browser camera capture on mobile
+The live camera uses `getUserMedia` with the rear camera. It needed `playsInline` and `muted` to play inline on iOS, and explicit track cleanup on close and unmount so the camera doesn't stay on after the user leaves the screen.
+
+## ✨ Features
+
+The app supports three roles, each with its own dashboard.
+
+### 👤 Clients
+- **Workouts:** view and follow trainer-assigned fitness plans
+- **Nutrition:** log meals by photo, image upload, or barcode, with automatic calorie and macro tracking
+- **Progress:** track weight, body composition, and lifts over time with charts
+- **Learn:** educational articles and videos from the coaching team
+- **Messages:** chat directly with their trainer
+
+### 🧑‍🏫 Trainers
+- **Client roster:** see assigned clients and drill into each client's details
+- **Plan assignment:** assign and monitor workout plans
+- **Messaging and videos:** communicate with clients and share exercise videos
+- **Trainer profile:** manage their public profile
+
+### 🛠️ Admins
+- **Analytics dashboard:** platform-wide usage and progress insights
+- **User and trainer management:** invite users and manage trainer–client assignments
+- **Content management:** publish announcements, educational content, and videos
+
+## 🧰 Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 18, Vite, React Router |
+| **Styling / UI** | Tailwind CSS, Radix UI, shadcn/ui, Framer Motion, Lucide icons |
+| **Data & State** | TanStack Query, React Hook Form, Zod |
+| **Charts** | Recharts |
+| **Backend / Platform** | Base44 (auth, database, hosting, serverless functions) |
+| **AI** | Base44 InvokeLLM (vision + structured JSON output) |
+| **Tooling** | ESLint, TypeScript type-checking, PostCSS |
+
+## 📁 Project Structure
+
+```
+ejt-fitness-app/
+├── base44/
+│   ├── entities/        # Data models
+│   ├── functions/       # Serverless backend functions
+│   └── config.jsonc
+├── src/
+│   ├── api/             # Base44 client and API integrations
+│   ├── components/      # Reusable UI components
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Shared utilities
+│   ├── pages/           # Client, Trainer, and Admin pages
+│   ├── utils/
+│   ├── App.jsx
+│   └── main.jsx
+├── package.json
+└── vite.config.js
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm
+- A Base44 account and app (for auth, database, and functions)
+
+### Installation
 
 ```bash
 git clone https://github.com/richsudaniman/ejt-fitness-app.git
@@ -57,4 +155,16 @@ npm install
 npm run dev
 ```
 
-Also `npm run build`, `npm run preview`, `npm run lint`, `npm run typecheck`.
+### Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the local development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview the production build |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript type-checking |
+
+## 📬 Contact
+
+Built by **Jalal Abdelrahim** · [GitHub](https://github.com/richsudaniman)
